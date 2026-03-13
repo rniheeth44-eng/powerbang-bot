@@ -1,15 +1,11 @@
 {
-  "name": "@workspace/discord-bot",
-  "version": "0.0.0",
-  "private": true,
-  "type": "commonjs",
+  "name": "powerbang-bot",
+  "version": "1.0.0",
+  "main": "index.js",
   "scripts": {
-    "dev": "node src/index.js",
-    "start": "node src/index.js"
+    "start": "node index.js"
   },
   "dependencies": {
-    "better-sqlite3": "^12.6.2",
-    "discord.js": "^14.16.3",
-    "quick.db": "^9.1.7"
+    "discord.js": "^14.14.1"
   }
 }
