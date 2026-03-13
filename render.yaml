@@ -1,5 +1,5 @@
 services:
-  - type: web
+  - type: worker
     name: powerbang-bot
     env: node
     buildCommand: npm install
