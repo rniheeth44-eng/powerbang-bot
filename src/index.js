@@ -1,5 +1,5 @@
 
-const path = require("path")
+const path = require("path");
 
 // WEB SERVER FOR 24/7 UPTIME
 const express = require("express");
@@ -18,15 +18,14 @@ const {
   GatewayIntentBits,
   EmbedBuilder,
   ActionRowBuilder,
-const {
-  Client,
-  GatewayIntentBits,
-  EmbedBuilder,
-  ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
   ModalBuilder,
   TextInputBuilder,
+  TextInputStyle,
+  ChannelType,
+  PermissionsBitField
+} = require("discord.js");,
   TextInputStyle,
   PermissionFlagsBits,
   ChannelType,
