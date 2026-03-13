@@ -1,5 +1,4 @@
 const path = require("path")
-const express = require("express")
 
 const {
   Client,
@@ -21,19 +20,11 @@ const db = new QuickDB()
 
 const ASSETS = path.join(__dirname, "../assets")
 
-// Self-contained image server so the bot works on any host (Railway, Replit, etc.)
-const imgApp = express()
-imgApp.use("/images", express.static(ASSETS))
-const IMG_PORT = process.env.PORT || 3000
-imgApp.listen(IMG_PORT, () => console.log(`Image server on port ${IMG_PORT}`))
-
-const IMG_BASE = process.env.RENDER_EXTERNAL_URL
-  ? `${process.env.RENDER_EXTERNAL_URL}/images`
-  : process.env.RAILWAY_PUBLIC_DOMAIN
-    ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}/images`
-    : process.env.REPLIT_DEV_DOMAIN
-      ? `https://${process.env.REPLIT_DEV_DOMAIN}/api/images`
-      : `http://localhost:${IMG_PORT}/images`
+// Images are served from GitHub raw URLs (works on any host, no server needed)
+const GITHUB_IMG = "https://raw.githubusercontent.com/rniheeth44-eng/powerbang-bot/main/assets"
+const IMG_BASE = process.env.REPLIT_DEV_DOMAIN
+  ? `https://${process.env.REPLIT_DEV_DOMAIN}/api/images`
+  : GITHUB_IMG
 
 if (!process.env.TOKEN) {
   console.error("ERROR: TOKEN environment variable is not set.")
