@@ -25,11 +25,6 @@ const {
   TextInputStyle,
   ChannelType,
   PermissionsBitField
-} = require("discord.js");,
-  TextInputStyle,
-  PermissionFlagsBits,
-  ChannelType,
-  AttachmentBuilder,
 } = require("discord.js")
 
 const { QuickDB } = require("quick.db")
