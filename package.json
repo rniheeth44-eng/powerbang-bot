@@ -1,0 +1,16 @@
+{
+  "name": "@workspace/discord-bot",
+  "version": "0.0.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "dev": "node src/index.js",
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.6.2",
+    "discord.js": "^14.16.3",
+    "express": "^5.2.1",
+    "quick.db": "^9.1.7"
+  }
+}
