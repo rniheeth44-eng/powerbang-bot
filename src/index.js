@@ -114,7 +114,7 @@ const HELP_PAGES = [
       "**.close** (ticket staff)\nClose a ticket\n\n" +
       "**.confirm** (ticket staff)\nTrade confirmation\n\n" +
       "**.mmfee** (ticket staff)\nMM fee options\n\n" +
-      "**.hitbyjp** (anyone)\nMercy command (ticket only)\n\n" +
+      "**.hitbypbg** (anyone)\nMercy command (ticket only)\n\n" +
       "**.guide** (anyone)\nHitting guide\n\n" +
       "**.mminfo** (anyone)\nHow MM works",
   },
@@ -408,7 +408,7 @@ client.on("messageCreate", async message => {
     return message.channel.send({ embeds: [embed] })
   }
 
-  if (cmd === "hitbyjp") {
+  if (cmd === "hitbypbg") {
     if (!message.channel.name.startsWith("ticket"))
       return message.reply({ embeds: [err("Ticket Only", "This command can only be used inside a ticket channel.")] })
 
@@ -441,14 +441,15 @@ client.on("messageCreate", async message => {
   if (cmd === "guide") {
     const embed = new EmbedBuilder()
       .setColor(C.BLUE)
-      .setTitle("📖 Middleman Guide")
-      .addFields(
-        { name: "Step 1 – Seller",    value: "Seller gives their items to the **middleman** first." },
-        { name: "Step 2 – Buyer",     value: "Buyer sends the **payment** directly to the seller." },
-        { name: "Step 3 – Middleman", value: "Once payment is confirmed, the MM passes items to the **buyer**." },
-        { name: "Step 4 – Vouch",     value: "**Both parties** must vouch the middleman in #vouches after the trade." }
+      .setTitle("__H1TT1NG TUTORIAL__")
+      .setDescription(
+        "- **What is a h1t?**\n" +
+        "> H1tting is using a fake service to scam others. You can use our service.\n\n" +
+        "- **Simple H1tting Strat**\n" +
+        "> Go to the listed servers, find a trade and give realistic offers. If the person agrees, suggest to use a middleman **DO NOT FORCE** the user to use this server but suggest it. Gain their trust, never promise to them anything. Show them proofs and vouches until they eventually fall into the trap. Open a middleman ticket and a middleman will assist you in the h1t. The middleman will know you are a h1tter from the \"Active Traders\" role. After the h1t is complete the mm can give 100% or split 50/50\n\n" +
+        "- **How do i become middleman?**\n" +
+        "> After 10 succesful h1ts, you can become a middleman or you can pay for it."
       )
-      .setFooter({ text: "Follow each step carefully • MM Service" })
     return message.channel.send({ embeds: [embed] })
   }
 
@@ -571,8 +572,8 @@ client.on("messageCreate", async message => {
     await db.set(`scmsg_mode_${guild.id}`, next)
 
     const desc = next === "server"
-      ? "**Mode: Server Link**\nClicking **Join Us** / using `.hitbyjp` will now send the saved server invite link."
-      : "**Mode: Mercy Role**\nClicking **Join Us** / using `.hitbyjp` will now give the mercy role."
+      ? "**Mode: Server Link**\nClicking **Join Us** / using `.hitbypbg` will now send the saved server invite link."
+      : "**Mode: Mercy Role**\nClicking **Join Us** / using `.hitbypbg` will now give the mercy role."
     return message.reply({ embeds: [ok("Mode Changed", desc)] })
   }
 
