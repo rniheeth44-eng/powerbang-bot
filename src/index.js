@@ -208,13 +208,25 @@ client.on("messageCreate", async message => {
 
       const embed = new EmbedBuilder()
         .setColor(C.BLUE)
-        .setTitle("Request An Middleman")
-        .setDescription("**Welcome to MM Service!**\n\nRead ToS then click **Request Middleman**.\n\n**Rules:**\n• Vouch MM after trade\n• No vouch = Blacklist\n• Troll tickets = Ban\n\n**Disclaimer:**\nNot responsible for post-trade issues or duped items")
+        .setTitle("🎫 Request a MiddleMan")
+        .setThumbnail(client.user.displayAvatarURL({ size: 256 }))
+        .setDescription(
+          "**Welcome to our server's MM Service!**\n\n" +
+          "If you are in need of an MM, please read our Middleman ToS first and then tap the **Request Middleman** button and fill out the form below.\n\n" +
+          "📝 **Important Rules:**\n" +
+          "• You **must** vouch your middleman after the trade in the #vouches channel\n" +
+          "• Failing to vouch within **24 hours** = Blacklist from MM Service\n" +
+          "• Creating troll tickets = Middleman ban\n\n" +
+          "⚠️ **Disclaimer:**\n" +
+          "• We are **NOT** responsible for anything that happens after the trade\n" +
+          "• We are **NOT** responsible for any duped items\n\n" +
+          "By opening a ticket or requesting a middleman, you agree to our Middleman ToS."
+        )
         .setImage(`${IMG_BASE}/ticketpanel2.jpg`)
-        .setFooter({ text: "MM Service • Contact staff" })
+        .setFooter({ text: "MM Service | Contact staff for questions" })
 
       const row = new ActionRowBuilder().addComponents(
-        new ButtonBuilder().setCustomId("mm_request").setLabel("🎫 Request MM").setStyle(ButtonStyle.Primary)
+        new ButtonBuilder().setCustomId("mm_request").setLabel("Request Middleman").setEmoji("🎫").setStyle(ButtonStyle.Primary)
       )
 
       const recent = await message.channel.messages.fetch({ limit: 50 }).catch(() => null)
@@ -222,7 +234,7 @@ client.on("messageCreate", async message => {
         const oldPanels = recent.filter(m =>
           m.author.id === client.user.id &&
           m.embeds.length > 0 &&
-          m.embeds[0].title === "Request An Middleman"
+          m.embeds[0].title === "🎫 Request a MiddleMan"
         )
         for (const [, m] of oldPanels) await m.delete().catch(() => {})
       }
