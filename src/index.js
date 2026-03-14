@@ -32,7 +32,7 @@ const GITHUB_IMG = "https://raw.githubusercontent.com/rniheeth44-eng/powerbang-b
 const IMG_BASE = GITHUB_IMG
 
 if (!process.env.TOKEN) {
-  console.error("âŒ ERROR: TOKEN not set!")
+  console.error("❌ ERROR: TOKEN not set!")
   process.exit(1)
 }
 
@@ -59,9 +59,9 @@ const C = {
   TEAL: 0x1ABC9C,
 }
 
-const ok = (title, desc) => new EmbedBuilder().setColor(C.GREEN).setTitle(`âœ… ${title}`).setDescription(desc).setTimestamp()
-const err = (title, desc) => new EmbedBuilder().setColor(C.RED).setTitle(`âŒ ${title}`).setDescription(desc).setTimestamp()
-const inf = (title, desc) => new EmbedBuilder().setColor(C.BLUE).setTitle(`ðŸ“‹ ${title}`).setDescription(desc).setTimestamp()
+const ok = (title, desc) => new EmbedBuilder().setColor(C.GREEN).setTitle(`✅ ${title}`).setDescription(desc).setTimestamp()
+const err = (title, desc) => new EmbedBuilder().setColor(C.RED).setTitle(`❌ ${title}`).setDescription(desc).setTimestamp()
+const inf = (title, desc) => new EmbedBuilder().setColor(C.BLUE).setTitle(`📋 ${title}`).setDescription(desc).setTimestamp()
 
 async function isAdmin(member, guildId) {
   if (member.id === ownerID) return true
@@ -78,57 +78,57 @@ async function isTicketStaff(member, guildId) {
   return false
 }
 
-// â”€â”€â”€ HELP PAGES â”€â”€â”€
+// ─── HELP PAGES ───
 const HELP_PAGES = [
   {
-    title: "ðŸ” Bot Help Menu",
+    title: "🔍 Bot Help Menu",
     color: C.BLUE,
-    description: "Welcome to the Bot help system! Use the buttons below to navigate between command categories.\n\nðŸ“‹ **Categories Available:**\n1. ðŸŽ« Ticket & Middleman\n2. âš™ï¸ Configuration & Setup\n3. ðŸ‘€ View & Info Commands\n4. ðŸ¤ Vouch System\n5. âš ï¸ Warning System\n6. ðŸ”§ Utility Commands\n7. ðŸ‘¤ User Management\n8. ðŸ‘‘ Bot Owner Only\n9. ðŸŒ Support System\n\nðŸ–Šï¸ **How to Use:**\nâ€¢ Use the navigation buttons to browse categories\nâ€¢ Only the person who used `.help` can use the buttons\nâ€¢ Click âŒ to close this menu\nâ€¢ Commands automatically time out after 60 seconds\n\nðŸ”‘ **Permission Legend:**\nâ€¢ **(admin)**: Requires admin role\nâ€¢ **(ticket staff)**: Requires ticket/admin role\nâ€¢ **(anyone)**: Everyone can use",
+    description: "Welcome to the Bot help system! Use the buttons below to navigate between command categories.\n\n📋 **Categories Available:**\n1. 🎫 Ticket & Middleman\n2. ⚙️ Configuration & Setup\n3. 👀 View & Info Commands\n4. 🤝 Vouch System\n5. ⚠️ Warning System\n6. 🔧 Utility Commands\n7. 👤 User Management\n8. 👑 Bot Owner Only\n9. 🌐 Support System\n\n🖊️ **How to Use:**\n• Use the navigation buttons to browse categories\n• Only the person who used `.help` can use the buttons\n• Click ❌ to close this menu\n• Commands automatically time out after 60 seconds\n\n🔑 **Permission Legend:**\n• **(admin)**: Requires admin role\n• **(ticket staff)**: Requires ticket/admin role\n• **(anyone)**: Everyone can use",
   },
   {
-    title: "ðŸŽ« Ticket & Middleman",
+    title: "🎫 Ticket & Middleman",
     color: C.BLUE,
-    description: "`.ticketpanel` â€” Post ticket panel *(ticket staff)*\n`.support` â€” Post support panel *(ticket staff)*\n`.adduser` â€” Add user to ticket *(ticket staff)*\n`.claim` â€” Claim a ticket *(ticket staff)*\n`.unclaim` â€” Unclaim a ticket *(ticket staff)*\n`.close` â€” Close a ticket *(ticket staff)*\n`.confirm` â€” Confirm trade *(ticket staff)*\n`.mmfee` â€” Show MM fees *(ticket staff)*\n`.hitbypbg` â€” Show scam recovery *(anyone)*\n`.guide` â€” Show hitting guide *(anyone)*\n`.mminfo` â€” Show MM info *(anyone)*\n`.scmsg` â€” Show scam message *(ticket staff)*",
+    description: "`.ticketpanel` — Post ticket panel *(ticket staff)*\n`.support` — Post support panel *(ticket staff)*\n`.adduser` — Add user to ticket *(ticket staff)*\n`.claim` — Claim a ticket *(ticket staff)*\n`.unclaim` — Unclaim a ticket *(ticket staff)*\n`.close` — Close a ticket *(ticket staff)*\n`.confirm` — Confirm trade *(ticket staff)*\n`.mmfee` — Show MM fees *(ticket staff)*\n`.hitbypbg` — Show scam recovery *(anyone)*\n`.guide` — Show hitting guide *(anyone)*\n`.mminfo` — Show MM info *(anyone)*\n`.scmsg` — Show scam message *(ticket staff)*",
   },
   {
-    title: "âš™ï¸ Configuration & Setup",
+    title: "⚙️ Configuration & Setup",
     color: C.PURPLE,
-    description: "`.setadminrole @role` â€” Set admin role *(admin)*\n`.setticketrole @role` â€” Set ticket staff role *(admin)*\n`.remticketrole` â€” Remove ticket role *(admin)*\n`.setmercyrole @role` â€” Set mercy role *(admin)*\n`.remmercyrole` â€” Remove mercy role *(admin)*\n`.setserver` â€” Set server invite link *(admin)*\n`.change` â€” Toggle role/server mode *(admin)*\n`.setprofit @user <amount>` â€” Set profit *(admin)*\n`.setlimit @user <amount>` â€” Set limit *(admin)*\n`.setvouches @user <amount>` â€” Set vouches *(admin)*\n`.autorole @role` â€” Set auto-role *(admin)*\n`.autoroledisable` â€” Disable auto-role *(admin)*",
+    description: "`.setadminrole @role` — Set admin role *(admin)*\n`.setticketrole @role` — Set ticket staff role *(admin)*\n`.remticketrole` — Remove ticket role *(admin)*\n`.setmercyrole @role` — Set mercy role *(admin)*\n`.remmercyrole` — Remove mercy role *(admin)*\n`.setserver` — Set server invite link *(admin)*\n`.change` — Toggle role/server mode *(admin)*\n`.setprofit @user <amount>` — Set profit *(admin)*\n`.setlimit @user <amount>` — Set limit *(admin)*\n`.setvouches @user <amount>` — Set vouches *(admin)*\n`.autorole @role` — Set auto-role *(admin)*\n`.autoroledisable` — Disable auto-role *(admin)*",
   },
   {
-    title: "ðŸ‘€ View & Info Commands",
+    title: "👀 View & Info Commands",
     color: C.TEAL,
-    description: "`.viewticketrole` â€” View ticket role *(anyone)*\n`.viewmercyrole` â€” View mercy role *(anyone)*\n`.viewadminrole` â€” View admin role *(anyone)*\n`.search [@user]` â€” View user stats *(anyone)*\n`.warns [@user]` â€” View warnings *(anyone)*\n`.w [@user]` â€” User info *(anyone)*\n`.av [@user]` â€” View avatar *(anyone)*\n`.vouchcount [@user]` â€” View vouches *(anyone)*\n`.debug` â€” Bot status *(anyone)*\n`.autoroleview` â€” View auto-role *(anyone)*\n`.autorolestats` â€” Auto-role stats *(anyone)*\n`.serverinfo` â€” Server info *(anyone)*",
+    description: "`.viewticketrole` — View ticket role *(anyone)*\n`.viewmercyrole` — View mercy role *(anyone)*\n`.viewadminrole` — View admin role *(anyone)*\n`.search [@user]` — View user stats *(anyone)*\n`.warns [@user]` — View warnings *(anyone)*\n`.w [@user]` — User info *(anyone)*\n`.av [@user]` — View avatar *(anyone)*\n`.vouchcount [@user]` — View vouches *(anyone)*\n`.debug` — Bot status *(anyone)*\n`.autoroleview` — View auto-role *(anyone)*\n`.autorolestats` — Auto-role stats *(anyone)*\n`.serverinfo` — Server info *(anyone)*",
   },
   {
-    title: "ðŸ¤ Vouch System",
+    title: "🤝 Vouch System",
     color: C.GOLD,
-    description: "`.vouch @user` â€” Vouch a user *(anyone)*\n`.vouchcount [@user]` â€” View vouch count *(anyone)*\n`.setvouches @user <amount>` â€” Set vouches *(admin)*",
+    description: "`.vouch @user` — Vouch a user *(anyone)*\n`.vouchcount [@user]` — View vouch count *(anyone)*\n`.setvouches @user <amount>` — Set vouches *(admin)*",
   },
   {
-    title: "âš ï¸ Warning System",
+    title: "⚠️ Warning System",
     color: C.YELLOW,
-    description: "`.warn @user` â€” Warn a user *(admin)*\n`.removewarn @user` â€” Remove a warning *(admin)*\n`.clearwarns @user` â€” Clear all warnings *(admin)*\n`.warns [@user]` â€” View warnings *(anyone)*",
+    description: "`.warn @user` — Warn a user *(admin)*\n`.removewarn @user` — Remove a warning *(admin)*\n`.clearwarns @user` — Clear all warnings *(admin)*\n`.warns [@user]` — View warnings *(anyone)*",
   },
   {
-    title: "ðŸ”§ Utility Commands",
+    title: "🔧 Utility Commands",
     color: C.GREY,
-    description: "`.purge <1-100>` â€” Delete messages *(admin)*\n`.afk [reason]` â€” Set AFK status *(anyone)*\n`.announce #channel <msg>` â€” Send announcement *(admin)*\n`.steal <emoji>` â€” Steal an emoji *(Manage Emojis)*",
+    description: "`.purge <1-100>` — Delete messages *(admin)*\n`.afk [reason]` — Set AFK status *(anyone)*\n`.announce #channel <msg>` — Send announcement *(admin)*\n`.steal <emoji>` — Steal an emoji *(Manage Emojis)*",
   },
   {
-    title: "ðŸ‘¤ User Management",
+    title: "👤 User Management",
     color: C.RED,
-    description: "`.addrole @user @role` â€” Add role to user *(admin)*\n`.ban @user [reason]` â€” Ban a user *(admin)*\n`.unban <userID>` â€” Unban a user *(admin)*\n`.mute @user [minutes] [reason]` â€” Timeout user *(admin)*\n`.unmute @user` â€” Remove timeout *(admin)*",
+    description: "`.addrole @user @role` — Add role to user *(admin)*\n`.ban @user [reason]` — Ban a user *(admin)*\n`.unban <userID>` — Unban a user *(admin)*\n`.mute @user [minutes] [reason]` — Timeout user *(admin)*\n`.unmute @user` — Remove timeout *(admin)*",
   },
   {
-    title: "ðŸ‘‘ Bot Owner Only",
+    title: "👑 Bot Owner Only",
     color: C.GOLD,
-    description: "`.remove` â€” Make bot leave server *(owner)*\n`.approve` â€” Approve a server *(owner)*\n`.killbug` â€” Shutdown bot *(owner)*\n`.initialize` â€” Request bot setup *(anyone)*\n`.reapplyautorole` â€” Reapply auto-role to all *(admin)*",
+    description: "`.remove` — Make bot leave server *(owner)*\n`.approve` — Approve a server *(owner)*\n`.killbug` — Shutdown bot *(owner)*\n`.initialize` — Request bot setup *(anyone)*\n`.reapplyautorole` — Reapply auto-role to all *(admin)*",
   },
   {
-    title: "ðŸŒ Support System",
+    title: "🌐 Support System",
     color: C.TEAL,
-    description: "`.ping` â€” Check bot ping *(anyone)*\n`.pbgontop` â€” Discord invite *(anyone)*\n`.help` â€” Show this menu *(anyone)*",
+    description: "`.ping` — Check bot ping *(anyone)*\n`.pbgontop` — Discord invite *(anyone)*\n`.help` — Show this menu *(anyone)*",
   },
 ]
 
@@ -138,34 +138,34 @@ function buildHelpEmbed(page, requester) {
     .setColor(data.color)
     .setTitle(data.title)
     .setDescription(data.description)
-    .setFooter({ text: `Requested by ${requester.username} â€¢ Page ${page + 1}/${HELP_PAGES.length} | Today at ${new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}` })
+    .setFooter({ text: `Requested by ${requester.username} • Page ${page + 1}/${HELP_PAGES.length} | Today at ${new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}` })
     .setTimestamp()
 }
 
 function buildHelpButtons(page) {
   return new ActionRowBuilder().addComponents(
-    new ButtonBuilder().setCustomId("help_first").setEmoji("â®ï¸").setStyle(ButtonStyle.Secondary).setDisabled(page === 0),
-    new ButtonBuilder().setCustomId("help_prev").setEmoji("â—€ï¸").setStyle(ButtonStyle.Primary).setDisabled(page === 0),
+    new ButtonBuilder().setCustomId("help_first").setEmoji("⏮️").setStyle(ButtonStyle.Secondary).setDisabled(page === 0),
+    new ButtonBuilder().setCustomId("help_prev").setEmoji("◀️").setStyle(ButtonStyle.Primary).setDisabled(page === 0),
     new ButtonBuilder().setCustomId("help_page").setLabel(`${page + 1}/${HELP_PAGES.length}`).setStyle(ButtonStyle.Secondary).setDisabled(true),
-    new ButtonBuilder().setCustomId("help_next").setEmoji("â–¶ï¸").setStyle(ButtonStyle.Primary).setDisabled(page === HELP_PAGES.length - 1),
-    new ButtonBuilder().setCustomId("help_last").setEmoji("â­ï¸").setStyle(ButtonStyle.Secondary).setDisabled(page === HELP_PAGES.length - 1),
+    new ButtonBuilder().setCustomId("help_next").setEmoji("▶️").setStyle(ButtonStyle.Primary).setDisabled(page === HELP_PAGES.length - 1),
+    new ButtonBuilder().setCustomId("help_last").setEmoji("⏭️").setStyle(ButtonStyle.Secondary).setDisabled(page === HELP_PAGES.length - 1),
   )
 }
 
-// â”€â”€â”€ READY EVENT â”€â”€â”€
+// ─── READY EVENT ───
 client.once("ready", () => {
-  console.log(`âœ… Bot Online: ${client.user.tag}`)
-  client.user.setActivity("PowerBang âš¡", { type: "WATCHING" })
+  console.log(`✅ Bot Online: ${client.user.tag}`)
+  client.user.setActivity("PowerBang ⚡", { type: "WATCHING" })
 })
 
-// â”€â”€â”€ AUTO-ROLE â”€â”€â”€
+// ─── AUTO-ROLE ───
 client.on("guildMemberAdd", async member => {
   const roleId = await db.get(`autorole_${member.guild.id}`)
   if (!roleId) return
   member.roles.add(roleId).catch(() => {})
 })
 
-// â”€â”€â”€ MESSAGE CREATE â”€â”€â”€
+// ─── MESSAGE CREATE ───
 client.on("messageCreate", async message => {
   if (message.author.bot) return
   if (!message.guild) return
@@ -174,7 +174,7 @@ client.on("messageCreate", async message => {
   for (const user of message.mentions.users.values()) {
     const afkReason = await db.get(`afk_${user.id}`)
     if (afkReason) {
-      await message.reply({ embeds: [new EmbedBuilder().setColor(C.YELLOW).setDescription(`ðŸ’¤ **${user.username}** is AFK: ${afkReason}`)] }).catch(() => {})
+      await message.reply({ embeds: [new EmbedBuilder().setColor(C.YELLOW).setDescription(`💤 **${user.username}** is AFK: ${afkReason}`)] }).catch(() => {})
     }
   }
 
@@ -183,7 +183,7 @@ client.on("messageCreate", async message => {
     const afkReason = await db.get(`afk_${message.author.id}`)
     if (afkReason) {
       await db.delete(`afk_${message.author.id}`)
-      await message.reply({ embeds: [new EmbedBuilder().setColor(C.GREEN).setDescription(`ðŸ‘‹ Welcome back! AFK removed.`)] }).catch(() => {})
+      await message.reply({ embeds: [new EmbedBuilder().setColor(C.GREEN).setDescription(`👋 Welcome back! AFK removed.`)] }).catch(() => {})
     }
   }
 
@@ -198,7 +198,7 @@ client.on("messageCreate", async message => {
 
   try {
 
-    // â”€â”€â”€ TICKETS â”€â”€â”€
+    // ─── TICKETS ───
     if (cmd === "ticketpanel") {
       if (!await isTicketStaff(member, guild.id))
         return message.reply({ embeds: [err("No Permission", "Ticket Staff only")] }).catch(() => {})
@@ -206,12 +206,12 @@ client.on("messageCreate", async message => {
       const embed = new EmbedBuilder()
         .setColor(C.BLUE)
         .setTitle("Request An Middleman")
-        .setDescription("**Welcome to MM Service!**\n\nRead ToS then click **Request Middleman**.\n\n**Rules:**\nâ€¢ Vouch MM after trade\nâ€¢ No vouch = Blacklist\nâ€¢ Troll tickets = Ban\n\n**Disclaimer:**\nNot responsible for post-trade issues or duped items")
+        .setDescription("**Welcome to MM Service!**\n\nRead ToS then click **Request Middleman**.\n\n**Rules:**\n• Vouch MM after trade\n• No vouch = Blacklist\n• Troll tickets = Ban\n\n**Disclaimer:**\nNot responsible for post-trade issues or duped items")
         .setImage(`${IMG_BASE}/ticketpanel2.jpg`)
-        .setFooter({ text: "MM Service â€¢ Contact staff" })
+        .setFooter({ text: "MM Service • Contact staff" })
 
       const row = new ActionRowBuilder().addComponents(
-        new ButtonBuilder().setCustomId("mm_request").setLabel("ðŸŽ« Request MM").setStyle(ButtonStyle.Primary)
+        new ButtonBuilder().setCustomId("mm_request").setLabel("🎫 Request MM").setStyle(ButtonStyle.Primary)
       )
 
       const recent = await message.channel.messages.fetch({ limit: 50 }).catch(() => null)
@@ -235,11 +235,11 @@ client.on("messageCreate", async message => {
 
       const embed = new EmbedBuilder()
         .setColor(C.TEAL)
-        .setTitle("ðŸ†˜ Support")
-        .setDescription("Need help? Click below.\n\n**Before opening:**\nâ€¢ Check #faq\nâ€¢ Explain clearly\nâ€¢ No spam")
+        .setTitle("🆘 Support")
+        .setDescription("Need help? Click below.\n\n**Before opening:**\n• Check #faq\n• Explain clearly\n• No spam")
 
       const row = new ActionRowBuilder().addComponents(
-        new ButtonBuilder().setCustomId("mm_request").setLabel("ðŸ†˜ Open Ticket").setStyle(ButtonStyle.Secondary)
+        new ButtonBuilder().setCustomId("mm_request").setLabel("🆘 Open Ticket").setStyle(ButtonStyle.Secondary)
       )
       return message.channel.send({ embeds: [embed], components: [row] })
     }
@@ -270,7 +270,7 @@ client.on("messageCreate", async message => {
         return message.reply({ embeds: [err("Not a Ticket", "Use in ticket channel")] }).catch(() => {})
 
       return message.channel.send({
-        embeds: [new EmbedBuilder().setColor(C.GREEN).setTitle("ðŸŸ¢ Claimed").setDescription(`${message.author} claimed this.`).setTimestamp()]
+        embeds: [new EmbedBuilder().setColor(C.GREEN).setTitle("🟢 Claimed").setDescription(`${message.author} claimed this.`).setTimestamp()]
       })
     }
 
@@ -279,7 +279,7 @@ client.on("messageCreate", async message => {
         return message.reply({ embeds: [err("No Permission", "Ticket Staff only")] }).catch(() => {})
 
       return message.channel.send({
-        embeds: [new EmbedBuilder().setColor(C.YELLOW).setTitle("ðŸŸ¡ Unclaimed").setDescription("Waiting for a middleman...").setTimestamp()]
+        embeds: [new EmbedBuilder().setColor(C.YELLOW).setTitle("🟡 Unclaimed").setDescription("Waiting for a middleman...").setTimestamp()]
       })
     }
 
@@ -289,7 +289,7 @@ client.on("messageCreate", async message => {
         return message.reply({ embeds: [err("No Permission", "Ticket Staff only")] }).catch(() => {})
 
       await message.channel.send({
-        embeds: [new EmbedBuilder().setColor(C.RED).setTitle("ðŸ”’ Closing").setDescription("Deleting in 5s...").setTimestamp()]
+        embeds: [new EmbedBuilder().setColor(C.RED).setTitle("🔒 Closing").setDescription("Deleting in 5s...").setTimestamp()]
       })
       setTimeout(() => message.channel.delete().catch(() => {}), 5000)
       return
@@ -300,7 +300,7 @@ client.on("messageCreate", async message => {
         return message.reply({ embeds: [err("No Permission", "Ticket Staff only")] }).catch(() => {})
 
       return message.channel.send({
-        embeds: [new EmbedBuilder().setColor(C.GREEN).setTitle("âœ… Confirmed").setDescription(`${message.author} confirmed!\n\nBoth vouch MM! ðŸŽ‰`).setTimestamp()]
+        embeds: [new EmbedBuilder().setColor(C.GREEN).setTitle("✅ Confirmed").setDescription(`${message.author} confirmed!\n\nBoth vouch MM! 🎉`).setTimestamp()]
       })
     }
 
@@ -311,17 +311,17 @@ client.on("messageCreate", async message => {
       return message.reply({
         embeds: [new EmbedBuilder()
           .setColor(C.GOLD)
-          .setTitle("ðŸ’° Fees")
+          .setTitle("💰 Fees")
           .addFields(
-            { name: "$0â€“$100", value: "5%", inline: true },
-            { name: "$100â€“$500", value: "3%", inline: true },
+            { name: "$0–$100", value: "5%", inline: true },
+            { name: "$100–$500", value: "3%", inline: true },
             { name: "$500+", value: "2%", inline: true }
           )
         ]
       })
     }
 
-    // â”€â”€â”€ HITBYPBG (upgraded) â”€â”€â”€
+    // ─── HITBYPBG (upgraded) ───
     if (cmd === "hitbypbg") {
       if (!message.channel.name.startsWith("ticket"))
         return message.reply({ embeds: [err("Ticket Only", "Use in ticket")] }).catch(() => {})
@@ -334,20 +334,20 @@ client.on("messageCreate", async message => {
 
       const embed = new EmbedBuilder()
         .setColor(C.GOLD)
-        .setTitle("âš¡ Welcome To Our Hitting Era")
-        .setDescription("Here We Make People Rich by scamming others.\n\n**Would You Like to Join us and become richer than you ever were?**\n\n> Join us Now, **BECOME Richer** than you ever were!\n\n*Choose wisely â€” there is no going back.*")
-        .setFooter({ text: "PowerBang â€¢ Hitting Era" })
+        .setTitle("⚡ Welcome To Our Hitting Era")
+        .setDescription("Here We Make People Rich by scamming others.\n\n**Would You Like to Join us and become richer than you ever were?**\n\n> Join us Now, **BECOME Richer** than you ever were!\n\n*Choose wisely — there is no going back.*")
+        .setFooter({ text: "PowerBang • Hitting Era" })
         .setTimestamp()
 
       const row = new ActionRowBuilder().addComponents(
-        new ButtonBuilder().setCustomId(`hitbypbg_yes_${message.channel.id}`).setLabel("âœ… Yes, Join").setStyle(ButtonStyle.Success),
-        new ButtonBuilder().setCustomId(`hitbypbg_no_${message.channel.id}`).setLabel("âœ– No").setStyle(ButtonStyle.Danger),
+        new ButtonBuilder().setCustomId(`hitbypbg_yes_${message.channel.id}`).setLabel("Yes, Join").setEmoji("✅").setStyle(ButtonStyle.Success),
+        new ButtonBuilder().setCustomId(`hitbypbg_no_${message.channel.id}`).setLabel("No").setEmoji("✖️").setStyle(ButtonStyle.Danger),
       )
 
       return message.channel.send({ embeds: [embed], components: [row] })
     }
 
-    // â”€â”€â”€ SCMSG (upgraded) â”€â”€â”€
+    // ─── SCMSG (upgraded) ───
     if (cmd === "scmsg") {
       if (!await isTicketStaff(member, guild.id))
         return message.reply({ embeds: [err("No Permission", "Ticket Staff only")] }).catch(() => {})
@@ -364,12 +364,12 @@ client.on("messageCreate", async message => {
         .setDescription(
           "You can recover your loss by letting the MM know if you want join us or no.\n\n" +
           "You can earn **2x or 3x** of what you lost.\n" +
-          "ðŸ”— For the server link vouch the MM first as they tell you.\n" +
-          "ðŸ’° If you scam anyone's items, you will take **60%** of the scam and MM takes **40%..**\n" +
-          "ðŸš« Or you can go home crying with nothing in your pocket."
+          "🔗 For the server link vouch the MM first as they tell you.\n" +
+          "💰 If you scam anyone's items, you will take **60%** of the scam and MM takes **40%..**\n" +
+          "🚫 Or you can go home crying with nothing in your pocket."
         )
         .setImage(`${IMG_BASE}/scmsg.jpg`)
-        .setFooter({ text: "MM Service â€¢ Contact staff" })
+        .setFooter({ text: "MM Service • Contact staff" })
         .setTimestamp()
 
       const row = new ActionRowBuilder().addComponents(
@@ -386,36 +386,36 @@ client.on("messageCreate", async message => {
         embeds: [new EmbedBuilder()
           .setColor(C.BLUE)
           .setTitle("H1TTING TUTORIAL")
-          .setDescription("**What is it?** Using fake service to scam.\n\n**Strategy:** Find trades â†’ offer â†’ suggest MM â†’ gain trust â†’ open ticket â†’ MM assists â†’ profit split\n\n**MM Status:** After 10 h1ts or pay for it")
+          .setDescription("**What is it?** Using fake service to scam.\n\n**Strategy:** Find trades → offer → suggest MM → gain trust → open ticket → MM assists → profit split\n\n**MM Status:** After 10 h1ts or pay for it")
         ]
       })
     }
 
-    // â”€â”€â”€ MMINFO (upgraded) â”€â”€â”€
+    // ─── MMINFO (upgraded) ───
     if (cmd === "mminfo") {
       const embed = new EmbedBuilder()
         .setColor(C.BLUE)
         .setTitle("Middleman Info")
         .setDescription(
-          "â€¢ Seller gives the items to the middleman.\n\n" +
-          "â€¢ Buyer pays the seller.\n\n" +
-          "â€¢ Once the seller confirms the payment, the middleman passes the items to the buyer.\n\n" +
-          "â€¢ Both traders must vouch the middleman after use.\n\n" +
+          "• Seller gives the items to the middleman.\n\n" +
+          "• Buyer pays the seller.\n\n" +
+          "• Once the seller confirms the payment, the middleman passes the items to the buyer.\n\n" +
+          "• Both traders must vouch the middleman after use.\n\n" +
           "If you have questions, click a button below!"
         )
         .setImage(`${IMG_BASE}/mminfo2.jpg`)
-        .setFooter({ text: "Middleman System â€¢ Trusted & Secure" })
+        .setFooter({ text: "Middleman System • Trusted & Secure" })
         .setTimestamp()
 
       const row = new ActionRowBuilder().addComponents(
-        new ButtonBuilder().setCustomId("mm_understand").setLabel("âœ… I Understand").setStyle(ButtonStyle.Success),
-        new ButtonBuilder().setCustomId("mm_dontunderstand").setLabel("âœ– I Don't Understand").setStyle(ButtonStyle.Danger),
+        new ButtonBuilder().setCustomId("mm_understand").setLabel("I Understand").setEmoji("✅").setStyle(ButtonStyle.Success),
+        new ButtonBuilder().setCustomId("mm_dontunderstand").setLabel("I Don't Understand").setEmoji("✖️").setStyle(ButtonStyle.Danger),
       )
 
       return message.reply({ embeds: [embed], components: [row] })
     }
 
-    // â”€â”€â”€ CONFIG â”€â”€â”€
+    // ─── CONFIG ───
     if (cmd === "setadminrole") {
       if (!await isAdmin(member, guild.id))
         return message.reply({ embeds: [err("No Permission", "Admin only")] }).catch(() => {})
@@ -552,7 +552,7 @@ client.on("messageCreate", async message => {
       return message.reply({ embeds: [ok("Disabled", "Auto-role cleared")] }).catch(() => {})
     }
 
-    // â”€â”€â”€ VIEW â”€â”€â”€
+    // ─── VIEW ───
     if (cmd === "viewticketrole") {
       const roleId = await db.get(`ticketrole_${guild.id}`)
       return message.reply({ embeds: [inf("Ticket Role", roleId ? `<@&${roleId}>` : "Not set")] }).catch(() => {})
@@ -581,7 +581,7 @@ client.on("messageCreate", async message => {
       if (!role) return message.reply({ embeds: [err("Not Found", "Role deleted")] }).catch(() => {})
 
       return message.reply({
-        embeds: [new EmbedBuilder().setColor(C.TEAL).setTitle("ðŸ“Š Stats").addFields(
+        embeds: [new EmbedBuilder().setColor(C.TEAL).setTitle("📊 Stats").addFields(
           { name: "Role", value: `${role}`, inline: true },
           { name: "Members", value: `${role.members.size}`, inline: true }
         ).setTimestamp()]
@@ -595,7 +595,7 @@ client.on("messageCreate", async message => {
       const vouches = (await db.get(`vouch_${target.id}`)) || 0
 
       return message.reply({
-        embeds: [new EmbedBuilder().setColor(C.TEAL).setTitle(`ðŸ” ${target.username}`).setThumbnail(target.displayAvatarURL({ size: 256 })).addFields(
+        embeds: [new EmbedBuilder().setColor(C.TEAL).setTitle(`🔍 ${target.username}`).setThumbnail(target.displayAvatarURL({ size: 256 })).addFields(
           { name: "Profit", value: typeof profit === "number" ? `$${profit}` : profit, inline: true },
           { name: "Limit", value: typeof limit === "number" ? `$${limit}` : limit, inline: true },
           { name: "Vouches", value: `${vouches}`, inline: true }
@@ -610,7 +610,7 @@ client.on("messageCreate", async message => {
       const roles = target.roles.cache.filter(r => r.id !== guild.id).sort((a, b) => b.position - a.position).first(5).map(r => `${r}`).join(", ") || "None"
 
       return message.reply({
-        embeds: [new EmbedBuilder().setColor(C.BLUE).setTitle(`ðŸ‘¤ ${target.user.username}`).setThumbnail(target.user.displayAvatarURL({ size: 256 })).addFields(
+        embeds: [new EmbedBuilder().setColor(C.BLUE).setTitle(`👤 ${target.user.username}`).setThumbnail(target.user.displayAvatarURL({ size: 256 })).addFields(
           { name: "Username", value: target.user.tag, inline: true },
           { name: "ID", value: target.id, inline: true },
           { name: "Created", value: created, inline: false },
@@ -634,8 +634,8 @@ client.on("messageCreate", async message => {
       const s = Math.floor(uptime % 60)
 
       return message.reply({
-        embeds: [new EmbedBuilder().setColor(C.GREEN).setTitle("ðŸ¤– Status").addFields(
-          { name: "Status", value: "ðŸŸ¢ Online", inline: true },
+        embeds: [new EmbedBuilder().setColor(C.GREEN).setTitle("🤖 Status").addFields(
+          { name: "Status", value: "🟢 Online", inline: true },
           { name: "Ping", value: `${client.ws.ping}ms`, inline: true },
           { name: "Uptime", value: `${h}h ${m}m ${s}s`, inline: true },
           { name: "Servers", value: `${client.guilds.cache.size}`, inline: true },
@@ -647,7 +647,7 @@ client.on("messageCreate", async message => {
     if (cmd === "serverinfo") {
       const owner = await guild.fetchOwner().catch(() => null)
       return message.reply({
-        embeds: [new EmbedBuilder().setColor(C.BLUE).setTitle(`ðŸ“Š ${guild.name}`).setThumbnail(guild.iconURL({ size: 256 })).addFields(
+        embeds: [new EmbedBuilder().setColor(C.BLUE).setTitle(`📊 ${guild.name}`).setThumbnail(guild.iconURL({ size: 256 })).addFields(
           { name: "Owner", value: owner ? `${owner.user}` : "Unknown", inline: true },
           { name: "Members", value: `${guild.memberCount}`, inline: true },
           { name: "Created", value: `<t:${Math.floor(guild.createdTimestamp / 1000)}:R>`, inline: true },
@@ -657,7 +657,7 @@ client.on("messageCreate", async message => {
       })
     }
 
-    // â”€â”€â”€ VOUCH â”€â”€â”€
+    // ─── VOUCH ───
     if (cmd === "vouch") {
       const target = message.mentions.users.first()
       if (!target) return message.reply({ embeds: [err("No User", "@mention")] }).catch(() => {})
@@ -667,8 +667,8 @@ client.on("messageCreate", async message => {
       await db.set(`vouch_${target.id}`, v + 1)
 
       return message.reply({
-        embeds: [new EmbedBuilder().setColor(C.GREEN).setTitle("â­ Vouch").setDescription(`${target} got a vouch from ${message.author}!`).addFields(
-          { name: "Total", value: `${v + 1}â­`, inline: true }
+        embeds: [new EmbedBuilder().setColor(C.GREEN).setTitle("⭐ Vouch").setDescription(`${target} got a vouch from ${message.author}!`).addFields(
+          { name: "Total", value: `${v + 1}⭐`, inline: true }
         ).setThumbnail(target.displayAvatarURL({ size: 256 })).setTimestamp()]
       })
     }
@@ -678,11 +678,11 @@ client.on("messageCreate", async message => {
       const v = (await db.get(`vouch_${target.id}`)) || 0
 
       return message.reply({
-        embeds: [new EmbedBuilder().setColor(C.GOLD).setTitle("â­ Vouches").setDescription(`${target} has ${v} vouch${v !== 1 ? "es" : ""}`).setThumbnail(target.displayAvatarURL({ size: 256 })).setTimestamp()]
+        embeds: [new EmbedBuilder().setColor(C.GOLD).setTitle("⭐ Vouches").setDescription(`${target} has ${v} vouch${v !== 1 ? "es" : ""}`).setThumbnail(target.displayAvatarURL({ size: 256 })).setTimestamp()]
       })
     }
 
-    // â”€â”€â”€ WARNS â”€â”€â”€
+    // ─── WARNS ───
     if (cmd === "warn") {
       if (!await isAdmin(member, guild.id))
         return message.reply({ embeds: [err("No Permission", "Admin only")] }).catch(() => {})
@@ -694,8 +694,8 @@ client.on("messageCreate", async message => {
       await db.set(`warn_${target.id}`, warns + 1)
 
       return message.reply({
-        embeds: [new EmbedBuilder().setColor(C.RED).setTitle("âš ï¸ Warned").setDescription(`${target} warned by ${message.author}`).addFields(
-          { name: "Total", value: `${warns + 1}âš ï¸`, inline: true }
+        embeds: [new EmbedBuilder().setColor(C.RED).setTitle("⚠️ Warned").setDescription(`${target} warned by ${message.author}`).addFields(
+          { name: "Total", value: `${warns + 1}⚠️`, inline: true }
         ).setThumbnail(target.displayAvatarURL({ size: 256 })).setTimestamp()]
       })
     }
@@ -730,11 +730,11 @@ client.on("messageCreate", async message => {
       const warns = (await db.get(`warn_${target.id}`)) || 0
 
       return message.reply({
-        embeds: [new EmbedBuilder().setColor(warns > 0 ? C.YELLOW : C.GREEN).setTitle("âš ï¸ Warnings").setDescription(`${target} has ${warns} warn${warns !== 1 ? "s" : ""}`).setThumbnail(target.displayAvatarURL({ size: 256 })).setTimestamp()]
+        embeds: [new EmbedBuilder().setColor(warns > 0 ? C.YELLOW : C.GREEN).setTitle("⚠️ Warnings").setDescription(`${target} has ${warns} warn${warns !== 1 ? "s" : ""}`).setThumbnail(target.displayAvatarURL({ size: 256 })).setTimestamp()]
       })
     }
 
-    // â”€â”€â”€ UTILITY â”€â”€â”€
+    // ─── UTILITY ───
     if (cmd === "purge") {
       if (!member.permissions.has(PermissionFlagsBits.ManageMessages))
         return message.reply({ embeds: [err("No Permission", "Manage Messages")] }).catch(() => {})
@@ -746,7 +746,7 @@ client.on("messageCreate", async message => {
       await message.channel.bulkDelete(amount, true).catch(() => {})
 
       const msg = await message.channel.send({
-        embeds: [new EmbedBuilder().setColor(C.RED).setTitle("ðŸ—‘ï¸ Purged").setDescription(`Deleted ${amount} msg${amount !== 1 ? "s" : ""}`).setTimestamp()]
+        embeds: [new EmbedBuilder().setColor(C.RED).setTitle("🗑️ Purged").setDescription(`Deleted ${amount} msg${amount !== 1 ? "s" : ""}`).setTimestamp()]
       })
       setTimeout(() => msg.delete().catch(() => {}), 4000)
       return
@@ -757,7 +757,7 @@ client.on("messageCreate", async message => {
       await db.set(`afk_${message.author.id}`, reason)
 
       return message.reply({
-        embeds: [new EmbedBuilder().setColor(C.YELLOW).setTitle("ðŸ’¤ AFK").setDescription(`${message.author} is AFK.\n**Reason:** ${reason}`).setTimestamp()]
+        embeds: [new EmbedBuilder().setColor(C.YELLOW).setTitle("💤 AFK").setDescription(`${message.author} is AFK.\n**Reason:** ${reason}`).setTimestamp()]
       })
     }
 
@@ -770,7 +770,7 @@ client.on("messageCreate", async message => {
       if (!channel || !text)
         return message.reply({ embeds: [err("Invalid", "`.announce #channel <msg>`")] }).catch(() => {})
 
-      const embed = new EmbedBuilder().setColor(C.GOLD).setTitle("ðŸ“¢ Announcement").setDescription(text).setFooter({ text: `By ${message.author.username}` }).setTimestamp()
+      const embed = new EmbedBuilder().setColor(C.GOLD).setTitle("📢 Announcement").setDescription(text).setFooter({ text: `By ${message.author.username}` }).setTimestamp()
 
       await channel.send({ embeds: [embed] })
       return message.reply({ embeds: [ok("Sent", `To ${channel}`)] }).catch(() => {})
@@ -795,7 +795,7 @@ client.on("messageCreate", async message => {
       return message.reply({ embeds: [ok("Stolen", `Added ${newEmoji}!`)] }).catch(() => {})
     }
 
-    // â”€â”€â”€ ROLES â”€â”€â”€
+    // ─── ROLES ───
     if (cmd === "addrole") {
       if (!await isAdmin(member, guild.id))
         return message.reply({ embeds: [err("No Permission", "Admin only")] }).catch(() => {})
@@ -860,7 +860,7 @@ client.on("messageCreate", async message => {
       return message.reply({ embeds: [ok("Unmuted", `${target} timeout removed`)] }).catch(() => {})
     }
 
-    // â”€â”€â”€ OWNER â”€â”€â”€
+    // ─── OWNER ───
     if (cmd === "remove") {
       if (message.author.id !== ownerID) return
       await message.reply({ embeds: [ok("Leaving", `Leaving ${guild.name}...`)] }).catch(() => {})
@@ -905,7 +905,7 @@ client.on("messageCreate", async message => {
       return processingMsg.edit({ embeds: [ok("Applied", `${count} member${count !== 1 ? "s" : ""}`)] })
     }
 
-    // â”€â”€â”€ HELP â”€â”€â”€
+    // ─── HELP ───
     if (cmd === "help") {
       const embed = buildHelpEmbed(0, message.author)
       const buttons = buildHelpButtons(0)
@@ -917,13 +917,13 @@ client.on("messageCreate", async message => {
         page: 0,
       })
 
-      console.log(`âœ… Help created: ${msg.id}`)
+      console.log(`✅ Help created: ${msg.id}`)
       return
     }
 
-    // â”€â”€â”€ MISC â”€â”€â”€
+    // ─── MISC ───
     if (cmd === "ping") {
-      return message.reply(`ðŸ“ ${client.ws.ping}ms`)
+      return message.reply(`🏓 ${client.ws.ping}ms`)
     }
 
     if (cmd === "pbgontop") {
@@ -936,11 +936,11 @@ client.on("messageCreate", async message => {
   }
 })
 
-// â”€â”€â”€ INTERACTIONS â”€â”€â”€
+// ─── INTERACTIONS ───
 client.on("interactionCreate", async interaction => {
   try {
 
-    // â”€â”€â”€ HELP BUTTONS â”€â”€â”€
+    // ─── HELP BUTTONS ───
     if (interaction.isButton() && ["help_first", "help_prev", "help_next", "help_last"].includes(interaction.customId)) {
       const session = await db.get(`help_${interaction.message.id}`)
 
@@ -969,10 +969,10 @@ client.on("interactionCreate", async interaction => {
 
     if (!interaction.isButton() && !interaction.isModalSubmit()) return
 
-    // â”€â”€â”€ MMINFO BUTTONS â”€â”€â”€
+    // ─── MMINFO BUTTONS ───
     if (interaction.customId === "mm_understand") {
-      await interaction.channel.send(`${interaction.user} has understood âœ…`)
-      await interaction.reply({ content: "âœ… Recorded!", ephemeral: true })
+      await interaction.channel.send(`${interaction.user} has understood ✅`)
+      await interaction.reply({ content: "✅ Recorded!", ephemeral: true })
       return
     }
 
@@ -983,12 +983,13 @@ client.on("interactionCreate", async interaction => {
       const changeMindRow = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
           .setCustomId(`mm_changemind_${interaction.user.id}`)
-          .setLabel("âœ… I Changed My Mind â€” I Understand Now")
+          .setLabel("I Changed My Mind — I Understand Now")
+          .setEmoji("✅")
           .setStyle(ButtonStyle.Success)
       )
 
       await interaction.reply({
-        content: `âŒ No worries. You have until <t:${expiresTimestamp}:T> (<t:${expiresTimestamp}:R>) to change your mind if you want.`,
+        content: `❌ No worries. You have until <t:${expiresTimestamp}:T> (<t:${expiresTimestamp}:R>) to change your mind if you want.`,
         components: [changeMindRow],
         ephemeral: true
       })
@@ -1000,19 +1001,19 @@ client.on("interactionCreate", async interaction => {
       if (interaction.user.id !== originalUserId)
         return interaction.reply({ content: "This button is not for you.", ephemeral: true })
 
-      await interaction.channel.send(`${interaction.user} has understood âœ…`)
-      await interaction.update({ content: "âœ… Great! Recorded that you now understand.", components: [] })
+      await interaction.channel.send(`${interaction.user} has understood ✅`)
+      await interaction.update({ content: "✅ Great! Recorded that you now understand.", components: [] })
       return
     }
 
-    // â”€â”€â”€ HITBYPBG BUTTONS â”€â”€â”€
+    // ─── HITBYPBG BUTTONS ───
     if (interaction.customId.startsWith("hitbypbg_yes_")) {
       const channelId = interaction.customId.replace("hitbypbg_yes_", "")
       const invoker = await db.get(`hitbypbg_invoker_${channelId}`)
 
       // Public message in channel
       await interaction.channel.send(
-        `${interaction.user} **Ask Any of Our Staff Members for tips and tricks to become a Master** ðŸ¤`
+        `${interaction.user} **Ask Any of Our Staff Members for tips and tricks to become a Master** 🤝`
       )
 
       // DM the person who ran .hitbypbg
@@ -1020,14 +1021,14 @@ client.on("interactionCreate", async interaction => {
         try {
           const invokerUser = await client.users.fetch(invoker.userId)
           await invokerUser.send(
-            `**${interaction.user.username}** (<@${interaction.user.id}>) has accepted and wants to join! Ask them for tips and tricks to become a Master. ðŸ¤\n\n*From channel: ${interaction.channel.name}*`
+            `**${interaction.user.username}** (<@${interaction.user.id}>) has accepted and wants to join! Ask them for tips and tricks to become a Master. 🤝\n\n*From channel: ${interaction.channel.name}*`
           )
         } catch (e) {
           // DM failed silently
         }
       }
 
-      await interaction.reply({ content: "âœ… Welcome to the team!", ephemeral: true })
+      await interaction.reply({ content: "✅ Welcome to the team!", ephemeral: true })
       return
     }
 
@@ -1039,7 +1040,8 @@ client.on("interactionCreate", async interaction => {
       const changeMindRow = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
           .setCustomId(`hitbypbg_changemind_${channelId}_${interaction.user.id}`)
-          .setLabel("âœ… I Changed My Mind â€” Yes, I'll Join")
+          .setLabel("I Changed My Mind — Yes, I'll Join")
+          .setEmoji("✅")
           .setStyle(ButtonStyle.Success)
       )
 
@@ -1063,7 +1065,7 @@ client.on("interactionCreate", async interaction => {
 
       // Public message in channel
       await interaction.channel.send(
-        `${interaction.user} **Ask Any of Our Staff Members for tips and tricks to become a Master** ðŸ¤`
+        `${interaction.user} **Ask Any of Our Staff Members for tips and tricks to become a Master** 🤝`
       )
 
       // DM the person who ran .hitbypbg
@@ -1071,46 +1073,46 @@ client.on("interactionCreate", async interaction => {
         try {
           const invokerUser = await client.users.fetch(invoker.userId)
           await invokerUser.send(
-            `**${interaction.user.username}** (<@${interaction.user.id}>) changed their mind and wants to join! Ask them for tips and tricks to become a Master. ðŸ¤\n\n*From channel: ${interaction.channel.name}*`
+            `**${interaction.user.username}** (<@${interaction.user.id}>) changed their mind and wants to join! Ask them for tips and tricks to become a Master. 🤝\n\n*From channel: ${interaction.channel.name}*`
           )
         } catch (e) {
           // DM failed silently
         }
       }
 
-      await interaction.update({ content: "âœ… Welcome to the team! Glad you changed your mind.", components: [] })
+      await interaction.update({ content: "✅ Welcome to the team! Glad you changed your mind.", components: [] })
       return
     }
 
-    // â”€â”€â”€ SCMSG BUTTONS â”€â”€â”€
+    // ─── SCMSG BUTTONS ───
     if (interaction.customId.startsWith("scmsg_join_")) {
       const channelId = interaction.customId.replace("scmsg_join_", "")
       const invoker = await db.get(`scmsg_invoker_${channelId}`)
 
-      await interaction.channel.send(`@${interaction.user.username} has accepted his faith, and wanted to join us. ðŸ¤`)
+      await interaction.channel.send(`@${interaction.user.username} has accepted his faith, and wanted to join us. 🤝`)
 
       if (invoker) {
         try {
           const invokerUser = await client.users.fetch(invoker.userId)
           await invokerUser.send(
-            `**${interaction.user.username}** (<@${interaction.user.id}>) has accepted and wants to join! ðŸ¤\n\n*From channel: ${interaction.channel.name}*`
+            `**${interaction.user.username}** (<@${interaction.user.id}>) has accepted and wants to join! 🤝\n\n*From channel: ${interaction.channel.name}*`
           )
         } catch (e) {
           // DM failed silently
         }
       }
 
-      await interaction.reply({ content: "âœ… Welcome!", ephemeral: true })
+      await interaction.reply({ content: "✅ Welcome!", ephemeral: true })
       return
     }
 
     if (interaction.customId.startsWith("scmsg_leave_")) {
-      await interaction.channel.send(`${interaction.user} has left. ðŸ˜‚`)
+      await interaction.channel.send(`${interaction.user} has left. 😂`)
       await interaction.reply({ content: "Bye!", ephemeral: true })
       return
     }
 
-    // â”€â”€â”€ MM REQUEST BUTTON â”€â”€â”€
+    // ─── MM REQUEST BUTTON ───
     if (interaction.customId === "mm_request") {
       const modal = new ModalBuilder().setCustomId("mm_form").setTitle("Request MM")
 
@@ -1136,7 +1138,7 @@ client.on("interactionCreate", async interaction => {
       return interaction.showModal(modal)
     }
 
-    // â”€â”€â”€ MM FORM SUBMIT â”€â”€â”€
+    // ─── MM FORM SUBMIT ───
     if (interaction.isModalSubmit() && interaction.customId === "mm_form") {
       const trade = interaction.fields.getTextInputValue("trade")
       const otherParty = interaction.fields.getTextInputValue("other_party") || "Not specified"
@@ -1171,7 +1173,7 @@ client.on("interactionCreate", async interaction => {
 
       const ticketEmbed = new EmbedBuilder()
         .setColor(C.BLUE)
-        .setTitle("ðŸŽ« Ticket")
+        .setTitle("🎫 Ticket")
         .setDescription("A MM will be here soon.")
         .addFields(
           { name: "Trade", value: trade, inline: false },
@@ -1182,26 +1184,26 @@ client.on("interactionCreate", async interaction => {
         .setTimestamp()
 
       const closeRow = new ActionRowBuilder().addComponents(
-        new ButtonBuilder().setCustomId("close_ticket").setLabel("ðŸ”’ Close").setStyle(ButtonStyle.Danger),
-        new ButtonBuilder().setCustomId("claim_ticket").setLabel("ðŸŸ¢ Claim").setStyle(ButtonStyle.Success),
-        new ButtonBuilder().setCustomId("adduser_ticket").setLabel("âž• Add").setStyle(ButtonStyle.Secondary)
+        new ButtonBuilder().setCustomId("close_ticket").setLabel("🔒 Close").setStyle(ButtonStyle.Danger),
+        new ButtonBuilder().setCustomId("claim_ticket").setLabel("🟢 Claim").setStyle(ButtonStyle.Success),
+        new ButtonBuilder().setCustomId("adduser_ticket").setLabel("➕ Add").setStyle(ButtonStyle.Secondary)
       )
 
       const roleMention = ticketRoleId ? `<@&${ticketRoleId}> ` : ""
       await ticket.send({ content: `${roleMention}${interaction.user}`, embeds: [ticketEmbed], components: [closeRow] })
 
       return interaction.reply({
-        embeds: [new EmbedBuilder().setColor(C.GREEN).setTitle("âœ… Created").setDescription(`${ticket}`).setTimestamp()],
+        embeds: [new EmbedBuilder().setColor(C.GREEN).setTitle("✅ Created").setDescription(`${ticket}`).setTimestamp()],
         ephemeral: true,
       })
     }
 
-    // â”€â”€â”€ TICKET BUTTONS â”€â”€â”€
+    // ─── TICKET BUTTONS ───
     if (interaction.customId === "close_ticket") {
       if (!interaction.channel.name.startsWith("ticket"))
         return interaction.reply({ embeds: [err("Not Ticket", "Use in ticket")], ephemeral: true })
 
-      await interaction.reply({ embeds: [new EmbedBuilder().setColor(C.RED).setTitle("ðŸ”’ Closing").setDescription("5s...").setTimestamp()] })
+      await interaction.reply({ embeds: [new EmbedBuilder().setColor(C.RED).setTitle("🔒 Closing").setDescription("5s...").setTimestamp()] })
       setTimeout(() => interaction.channel.delete().catch(() => {}), 5000)
       return
     }
@@ -1212,17 +1214,17 @@ client.on("interactionCreate", async interaction => {
       const isStaff = member.id === ownerID || member.permissions.has(PermissionFlagsBits.Administrator) || (ticketRoleId && member.roles.cache.has(ticketRoleId))
 
       if (!isStaff)
-        return interaction.reply({ content: "âŒ Staff only", ephemeral: true })
+        return interaction.reply({ content: "❌ Staff only", ephemeral: true })
 
       const updatedRow = new ActionRowBuilder().addComponents(
-        new ButtonBuilder().setCustomId("close_ticket").setLabel("ðŸ”’ Close").setStyle(ButtonStyle.Danger),
-        new ButtonBuilder().setCustomId("claim_ticket").setLabel(`âœ… ${interaction.user.username}`).setStyle(ButtonStyle.Success).setDisabled(true),
-        new ButtonBuilder().setCustomId("adduser_ticket").setLabel("âž• Add").setStyle(ButtonStyle.Secondary)
+        new ButtonBuilder().setCustomId("close_ticket").setLabel("🔒 Close").setStyle(ButtonStyle.Danger),
+        new ButtonBuilder().setCustomId("claim_ticket").setLabel(`✅ ${interaction.user.username}`).setStyle(ButtonStyle.Success).setDisabled(true),
+        new ButtonBuilder().setCustomId("adduser_ticket").setLabel("➕ Add").setStyle(ButtonStyle.Secondary)
       )
       await interaction.message.edit({ components: [updatedRow] })
 
       await interaction.reply({
-        embeds: [new EmbedBuilder().setColor(C.GREEN).setTitle("âœ… Claimed").setDescription(`${interaction.user} claimed`).setTimestamp()]
+        embeds: [new EmbedBuilder().setColor(C.GREEN).setTitle("✅ Claimed").setDescription(`${interaction.user} claimed`).setTimestamp()]
       })
       return
     }
@@ -1233,7 +1235,7 @@ client.on("interactionCreate", async interaction => {
       const isStaff = member.id === ownerID || member.permissions.has(PermissionFlagsBits.Administrator) || (ticketRoleId && member.roles.cache.has(ticketRoleId))
 
       if (!isStaff)
-        return interaction.reply({ content: "âŒ Staff only", ephemeral: true })
+        return interaction.reply({ content: "❌ Staff only", ephemeral: true })
 
       const modal = new ModalBuilder().setCustomId("adduser_form").setTitle("Add User")
       const input = new TextInputBuilder()
@@ -1250,7 +1252,7 @@ client.on("interactionCreate", async interaction => {
       const userId = interaction.fields.getTextInputValue("user_id").replace(/[<@!>]/g, "").trim()
       const target = await interaction.guild.members.fetch(userId).catch(() => null)
       if (!target)
-        return interaction.reply({ content: "âŒ Not found", ephemeral: true })
+        return interaction.reply({ content: "❌ Not found", ephemeral: true })
 
       await interaction.channel.permissionOverwrites.edit(target, {
         ViewChannel: true,
@@ -1259,21 +1261,21 @@ client.on("interactionCreate", async interaction => {
       })
 
       return interaction.reply({
-        embeds: [new EmbedBuilder().setColor(C.GREEN).setTitle("âž• Added").setDescription(`${target} added`).setTimestamp()]
+        embeds: [new EmbedBuilder().setColor(C.GREEN).setTitle("➕ Added").setDescription(`${target} added`).setTimestamp()]
       })
     }
 
-    // â”€â”€â”€ MM YES/NO (legacy mminfo buttons) â”€â”€â”€
+    // ─── MM YES/NO (legacy mminfo buttons) ───
     if (interaction.customId === "mm_yes") {
       await interaction.deferReply({ ephemeral: true })
-      await interaction.channel.send(`${interaction.user} understood âœ…`)
+      await interaction.channel.send(`${interaction.user} understood ✅`)
       await interaction.editReply({ content: "Recorded" })
       return
     }
 
     if (interaction.customId === "mm_no") {
       await interaction.deferReply({ ephemeral: true })
-      await interaction.channel.send(`${interaction.user} didn't understand âŒ, ask staff`)
+      await interaction.channel.send(`${interaction.user} didn't understand ❌, ask staff`)
       await interaction.editReply({ content: "Recorded" })
       return
     }
