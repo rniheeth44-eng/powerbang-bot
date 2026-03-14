@@ -92,8 +92,7 @@ const HELP_PAGES = [
       "✏️ **How to Use:**\n" +
       "• Use the navigation buttons to browse categories\n" +
       "• Only the person who used `.help` can use the buttons\n" +
-      "• Click ❌ to close this menu\n" +
-      "• Buttons will work indefinitely until the message is deleted\n\n" +
+      "• Buttons work indefinitely\n\n" +
       "🔑 **Permission Legend:**\n" +
       "• **(admin)**: Requires admin role\n" +
       "• **(ticket staff)**: Requires ticket role or admin role\n" +
@@ -125,8 +124,8 @@ const HELP_PAGES = [
       "**.remticketrole** (admin)\nRemove ticket role\n\n" +
       "**.setmercyrole** (admin)\nSet mercy role\n\n" +
       "**.remmercyrole** (admin)\nRemove mercy role\n\n" +
-      "**.setserver** (admin)\nSet server invite link for scam msg\n\n" +
-      "**.change** (admin)\nToggle Join Us between mercy role / server link\n\n" +
+      "**.setserver** (admin)\nSet server invite link\n\n" +
+      "**.change** (admin)\nToggle Join Us mode\n\n" +
       "**.setprofit** (admin)\nSet user profit\n\n" +
       "**.setlimit** (admin)\nSet user limit\n\n" +
       "**.setvouches** (admin)\nSet user vouches\n\n" +
@@ -143,7 +142,7 @@ const HELP_PAGES = [
       "**.search** (anyone)\nView user profit/limit\n\n" +
       "**.warns** (anyone)\nView user warnings\n\n" +
       "**.w** (anyone)\nUser info\n\n" +
-      "**.av** (anyone)\nView avatar/banner\n\n" +
+      "**.av** (anyone)\nView avatar\n\n" +
       "**.vouchcount** (anyone)\nView user vouches\n\n" +
       "**.debug** (anyone)\nCheck bot status\n\n" +
       "**.autoroleview** (anyone)\nView auto-role\n\n" +
@@ -174,7 +173,7 @@ const HELP_PAGES = [
       "**.purge** (admin)\nDelete messages (1–100)\n\n" +
       "**.afk** (anyone)\nSet AFK status\n\n" +
       "**.announce** (admin)\nSend an announcement embed\n\n" +
-      "**.steal** (anyone)\nSteal/add emoji to server (requires Manage Emojis)",
+      "**.steal** (anyone)\nSteal/add emoji to server",
   },
   {
     title: "👤 User Management",
@@ -191,20 +190,19 @@ const HELP_PAGES = [
     color: C.GOLD,
     description:
       "**.remove** (bot owner)\nRemove bot from server\n\n" +
-      "**.approve** (bot owner)\nApprove server initialization\n\n" +
-      "**.killbug** (bot owner)\nKill bot in server\n\n" +
+      "**.approve** (bot owner)\nApprove server\n\n" +
+      "**.killbug** (bot owner)\nShutdown bot\n\n" +
       "**.initialize** (anyone)\nRequest bot initialization",
   },
   {
     title: "🎮 Support System",
     color: C.GREEN,
     description:
-      "**Auto-role automatically assigns a role to all new members**\n\n" +
       "**.autorole @role** (admin)\nSet auto-role\n\n" +
       "**.autoroleview** (anyone)\nView current auto-role\n\n" +
       "**.autoroledisable** (admin)\nDisable auto-role\n\n" +
       "**.autorolestats** (anyone)\nAuto-role statistics\n\n" +
-      "**.reapplyautorole** (admin)\nRe-apply auto-role to all members",
+      "**.reapplyautorole** (admin)\nRe-apply to all members",
   },
 ]
 
@@ -218,18 +216,18 @@ function buildHelpEmbed(page, requester) {
     .setTimestamp()
 }
 
-function buildHelpButtons(page, disabled = false) {
+function buildHelpButtons(page) {
   return new ActionRowBuilder().addComponents(
-    new ButtonBuilder().setCustomId("help_first").setEmoji("⏮️").setStyle(ButtonStyle.Secondary).setDisabled(disabled || page === 0),
-    new ButtonBuilder().setCustomId("help_prev") .setEmoji("◀️").setStyle(ButtonStyle.Primary)  .setDisabled(disabled || page === 0),
+    new ButtonBuilder().setCustomId("help_first").setEmoji("⏮️").setStyle(ButtonStyle.Secondary).setDisabled(page === 0),
+    new ButtonBuilder().setCustomId("help_prev") .setEmoji("◀️").setStyle(ButtonStyle.Primary)  .setDisabled(page === 0),
     new ButtonBuilder().setCustomId("help_page") .setLabel(`Page ${page + 1}/${HELP_PAGES.length}`).setStyle(ButtonStyle.Secondary).setDisabled(true),
-    new ButtonBuilder().setCustomId("help_next") .setEmoji("▶️").setStyle(ButtonStyle.Primary)  .setDisabled(disabled || page === HELP_PAGES.length - 1),
-    new ButtonBuilder().setCustomId("help_last") .setEmoji("⏭️").setStyle(ButtonStyle.Secondary).setDisabled(disabled || page === HELP_PAGES.length - 1),
+    new ButtonBuilder().setCustomId("help_next") .setEmoji("▶️").setStyle(ButtonStyle.Primary)  .setDisabled(page === HELP_PAGES.length - 1),
+    new ButtonBuilder().setCustomId("help_last") .setEmoji("⏭️").setStyle(ButtonStyle.Secondary).setDisabled(page === HELP_PAGES.length - 1),
   )
 }
 
 client.once("ready", () => {
-  console.log(`Bot Online: ${client.user.tag}`)
+  console.log(`✅ Bot Online: ${client.user.tag}`)
 })
 
 client.on("guildMemberAdd", async member => {
@@ -292,7 +290,6 @@ client.on("messageCreate", async message => {
       new ButtonBuilder().setCustomId("mm_request").setLabel("🎫  Request Middleman").setStyle(ButtonStyle.Primary)
     )
 
-    // Delete ALL old bot panel messages in this channel before sending fresh one
     const recent = await message.channel.messages.fetch({ limit: 50 }).catch(() => null)
     if (recent) {
       const oldPanels = recent.filter(m =>
@@ -303,7 +300,7 @@ client.on("messageCreate", async message => {
       for (const [, m] of oldPanels) await m.delete().catch(() => {})
     }
 
-    await message.delete().catch(() => {}) // clean up the command message
+    await message.delete().catch(() => {})
     const panel = await message.channel.send({ embeds: [embed], components: [row] })
     await db.set(`ticketpanel_${guild.id}_${message.channel.id}`, panel.id)
     return
@@ -1096,21 +1093,26 @@ client.on("messageCreate", async message => {
     })
   }
 
-  // ─── HELP COMMAND (FIXED) ───
+  // ─── HELP COMMAND (FIXED - NO TIMEOUT) ───
 
   if (cmd === "help") {
-    const embed   = buildHelpEmbed(0, message.author)
-    const buttons = buildHelpButtons(0)
+    try {
+      const embed = buildHelpEmbed(0, message.author)
+      const buttons = buildHelpButtons(0)
 
-    const msg = await message.channel.send({ embeds: [embed], components: [buttons] })
-    
-    // Store session in database - NO AUTO-EXPIRATION
-    await db.set(`help_${msg.id}`, { 
-      userId: message.author.id, 
-      page: 0, 
-      createdAt: Date.now()
-    })
+      const msg = await message.channel.send({ embeds: [embed], components: [buttons] })
+      
+      // Store help session - NO AUTO-DELETE
+      await db.set(`help_${msg.id}`, {
+        userId: message.author.id,
+        page: 0
+      })
 
+      console.log(`✅ Help menu created: ${msg.id} for user ${message.author.tag}`)
+    } catch (error) {
+      console.error("❌ Error in help command:", error)
+      return message.reply({ embeds: [err("Error", "Failed to create help menu.")] })
+    }
     return
   }
 
@@ -1130,36 +1132,45 @@ client.on("messageCreate", async message => {
 client.on("interactionCreate", async interaction => {
 
   // ─── HELP BUTTON HANDLER (FIXED) ───
-  if (interaction.isButton() && ["help_first","help_prev","help_next","help_last"].includes(interaction.customId)) {
-    const session = await db.get(`help_${interaction.message.id}`)
-    
-    // Check if session exists
-    if (!session)
-      return interaction.reply({ 
-        content: "This help menu has expired. Run `.help` again.", 
-        ephemeral: true 
+  if (interaction.isButton() && ["help_first", "help_prev", "help_next", "help_last"].includes(interaction.customId)) {
+    try {
+      const session = await db.get(`help_${interaction.message.id}`)
+
+      if (!session) {
+        return interaction.reply({
+          content: "This help menu has expired. Run `.help` again.",
+          ephemeral: true
+        })
+      }
+
+      if (interaction.user.id !== session.userId) {
+        return interaction.reply({
+          content: "Only the person who ran `.help` can use these buttons.",
+          ephemeral: true
+        })
+      }
+
+      let page = session.page || 0
+
+      // Handle navigation
+      if (interaction.customId === "help_first") page = 0
+      else if (interaction.customId === "help_prev") page = Math.max(0, page - 1)
+      else if (interaction.customId === "help_next") page = Math.min(HELP_PAGES.length - 1, page + 1)
+      else if (interaction.customId === "help_last") page = HELP_PAGES.length - 1
+
+      // Update session
+      session.page = page
+      await db.set(`help_${interaction.message.id}`, session)
+
+      // Update message
+      await interaction.update({
+        embeds: [buildHelpEmbed(page, interaction.user)],
+        components: [buildHelpButtons(page)]
       })
-
-    // Verify only the user who ran .help can use buttons
-    if (interaction.user.id !== session.userId)
-      return interaction.reply({ 
-        content: "Only the person who ran `.help` can navigate this menu.", 
-        ephemeral: true 
-      })
-
-    let { page } = session
-    if      (interaction.customId === "help_first") page = 0
-    else if (interaction.customId === "help_prev")  page = Math.max(0, page - 1)
-    else if (interaction.customId === "help_next")  page = Math.min(HELP_PAGES.length - 1, page + 1)
-    else if (interaction.customId === "help_last")  page = HELP_PAGES.length - 1
-
-    session.page = page
-    await db.set(`help_${interaction.message.id}`, session)
-
-    await interaction.update({ 
-      embeds: [buildHelpEmbed(page, interaction.user)], 
-      components: [buildHelpButtons(page)] 
-    })
+    } catch (error) {
+      console.error("❌ Error in help button:", error)
+      await interaction.reply({ content: "An error occurred.", ephemeral: true }).catch(() => {})
+    }
     return
   }
 
@@ -1171,7 +1182,7 @@ client.on("interactionCreate", async interaction => {
   }
 
   if (interaction.customId === "mm_no") {
-    await interaction.channel.send(`${interaction.user} hasn't understood ���, please ask the staff.`)
+    await interaction.channel.send(`${interaction.user} hasn't understood ❌, please ask the staff.`)
     return interaction.reply({ content: "Response recorded.", ephemeral: true })
   }
 
@@ -1201,7 +1212,4 @@ client.on("interactionCreate", async interaction => {
   }
 
   if (interaction.isModalSubmit() && interaction.customId === "mm_form") {
-    const trade      = interaction.fields.getTextInputValue("trade")
-    const otherParty = interaction.fields.getTextInputValue("other_party") || "Not specified"
-
-    const ticketRole
+    const trade      = interaction.fields.getTextInputValue
