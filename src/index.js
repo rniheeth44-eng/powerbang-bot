@@ -73,7 +73,8 @@ async function isTicketStaff(member, guildId) {
   return false
 }
 
-const helpSessions = new Map()
+// help sessions stored in DB so restarts don't expire them
+const HELP_TTL = 10 * 60 * 1000 // 10 minutes
 
 const HELP_PAGES = [
   {
@@ -293,7 +294,18 @@ client.on("messageCreate", async message => {
     const row = new ActionRowBuilder().addComponents(
       new ButtonBuilder().setCustomId("mm_request").setLabel("🎫  Request Middleman").setStyle(ButtonStyle.Primary)
     )
-    return message.channel.send({ embeds: [embed], components: [row] })
+
+    // Delete old panel if one exists in this channel
+    const oldPanelId = await db.get(`ticketpanel_${guild.id}_${message.channel.id}`)
+    if (oldPanelId) {
+      const oldMsg = await message.channel.messages.fetch(oldPanelId).catch(() => null)
+      if (oldMsg) await oldMsg.delete().catch(() => {})
+    }
+
+    await message.delete().catch(() => {}) // clean up the command message
+    const panel = await message.channel.send({ embeds: [embed], components: [row] })
+    await db.set(`ticketpanel_${guild.id}_${message.channel.id}`, panel.id)
+    return
   }
 
   if (cmd === "support") {
@@ -1090,13 +1102,14 @@ client.on("messageCreate", async message => {
     const buttons = buildHelpButtons(0)
 
     const msg = await message.channel.send({ embeds: [embed], components: [buttons] })
-    helpSessions.set(msg.id, { userId: message.author.id, page: 0 })
+    await db.set(`help_${msg.id}`, { userId: message.author.id, page: 0, expires: Date.now() + HELP_TTL })
 
     setTimeout(async () => {
-      if (!helpSessions.has(msg.id)) return
-      helpSessions.delete(msg.id)
+      const s = await db.get(`help_${msg.id}`)
+      if (!s) return
+      await db.delete(`help_${msg.id}`)
       await msg.edit({ components: [buildHelpButtons(0, true)] }).catch(() => {})
-    }, 60_000)
+    }, HELP_TTL)
   }
 
   // ─── MISC ───
@@ -1115,8 +1128,8 @@ client.on("messageCreate", async message => {
 client.on("interactionCreate", async interaction => {
 
   if (interaction.isButton() && ["help_first","help_prev","help_next","help_last"].includes(interaction.customId)) {
-    const session = helpSessions.get(interaction.message.id)
-    if (!session)
+    const session = await db.get(`help_${interaction.message.id}`)
+    if (!session || Date.now() > session.expires)
       return interaction.reply({ content: "This help menu has expired. Run `.help` again.", ephemeral: true })
 
     if (interaction.user.id !== session.userId)
@@ -1129,7 +1142,7 @@ client.on("interactionCreate", async interaction => {
     else if (interaction.customId === "help_last")  page = HELP_PAGES.length - 1
 
     session.page = page
-    helpSessions.set(interaction.message.id, session)
+    await db.set(`help_${interaction.message.id}`, session)
 
     await interaction.update({ embeds: [buildHelpEmbed(page, interaction.user)], components: [buildHelpButtons(page)] })
     return
