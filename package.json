@@ -1,7 +1,6 @@
 {
   "name": "powerbang-bot",
   "version": "1.0.0",
-  "description": "Discord ticket bot",
   "main": "index.js",
   "type": "commonjs",
   "scripts": {
@@ -9,8 +8,8 @@
   },
   "dependencies": {
     "discord.js": "^14.16.3",
+    "express": "^4.19.2",
     "quick.db": "^9.1.7",
-    "better-sqlite3": "^12.6.2",
-    "express": "^4.19.2"
+    "better-sqlite3": "^12.6.2"
   }
 }
