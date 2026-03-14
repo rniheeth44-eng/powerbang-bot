@@ -1,3 +1,6 @@
+client.once("ready", () => {
+  console.log(`✅ Logged in as ${client.user.tag}`);
+});
 const path = require("path");
 
 const {
