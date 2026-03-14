@@ -1,17 +1,4 @@
-
-const path = require("path");
-
-// WEB SERVER FOR 24/7 UPTIME
-const express = require("express");
-const app = express();
-
-app.get("/", (req, res) => {
-  res.send("Bot is alive!");
-});
-
-app.listen(3000, () => {
-  console.log("Web server running.");
-});
+const path = require("path")
 
 const {
   Client,
@@ -23,8 +10,9 @@ const {
   ModalBuilder,
   TextInputBuilder,
   TextInputStyle,
+  PermissionFlagsBits,
   ChannelType,
-  PermissionsBitField
+  AttachmentBuilder,
 } = require("discord.js")
 
 const { QuickDB } = require("quick.db")
@@ -139,6 +127,8 @@ const HELP_PAGES = [
       "**.remticketrole** (admin)\nRemove ticket role\n\n" +
       "**.setmercyrole** (admin)\nSet mercy role\n\n" +
       "**.remmercyrole** (admin)\nRemove mercy role\n\n" +
+      "**.setserver** (admin)\nSet server invite link for scam msg\n\n" +
+      "**.change** (admin)\nToggle Join Us between mercy role / server link\n\n" +
       "**.setprofit** (admin)\nSet user profit\n\n" +
       "**.setlimit** (admin)\nSet user limit\n\n" +
       "**.setvouches** (admin)\nSet user vouches\n\n" +
@@ -422,18 +412,30 @@ client.on("messageCreate", async message => {
     if (!message.channel.name.startsWith("ticket"))
       return message.reply({ embeds: [err("Ticket Only", "This command can only be used inside a ticket channel.")] })
 
-    const mercyRoleId = await db.get(`mercyrole_${guild.id}`)
-    if (!mercyRoleId)
-      return message.reply({ embeds: [err("Not Configured", "No mercy role set. Ask an admin to use `.setmercyrole`.")] })
+    const mode = await db.get(`scmsg_mode_${guild.id}`) || "role"
 
-    await member.roles.add(mercyRoleId).catch(() => {})
-
-    const embed = new EmbedBuilder()
-      .setColor(C.GREEN)
-      .setTitle("🕊️ Mercy Applied")
-      .setDescription(`${message.author} has been given the mercy role.`)
-      .setTimestamp()
-    return message.channel.send({ embeds: [embed] })
+    if (mode === "server") {
+      const serverLink = await db.get(`scmsg_server_${guild.id}`)
+      if (!serverLink)
+        return message.reply({ embeds: [err("Not Configured", "No server link set. Ask an admin to use `.setserver`.")] })
+      const embed = new EmbedBuilder()
+        .setColor(C.GREEN)
+        .setTitle("🔗 Server Link")
+        .setDescription(`${message.author}, here is your server link:\n${serverLink}`)
+        .setTimestamp()
+      return message.channel.send({ embeds: [embed] })
+    } else {
+      const mercyRoleId = await db.get(`mercyrole_${guild.id}`)
+      if (!mercyRoleId)
+        return message.reply({ embeds: [err("Not Configured", "No mercy role set. Ask an admin to use `.setmercyrole`.")] })
+      await member.roles.add(mercyRoleId).catch(() => {})
+      const embed = new EmbedBuilder()
+        .setColor(C.GREEN)
+        .setTitle("🕊️ Mercy Applied")
+        .setDescription(`${message.author} has been given the mercy role.`)
+        .setTimestamp()
+      return message.channel.send({ embeds: [embed] })
+    }
   }
 
   if (cmd === "guide") {
@@ -540,6 +542,38 @@ client.on("messageCreate", async message => {
 
     await db.delete(`mercyrole_${guild.id}`)
     return message.reply({ embeds: [ok("Mercy Role Removed", "Mercy role has been cleared.")] })
+  }
+
+  if (cmd === "setserver") {
+    if (!await isAdmin(member, guild.id))
+      return message.reply({ embeds: [err("No Permission", "Administrator permission required.")] })
+
+    const prompt = await message.channel.send({ embeds: [inf("Set Server", "Please send the server invite link now (you have 30 seconds):")] })
+    const filter = m => m.author.id === message.author.id
+    const collected = await message.channel.awaitMessages({ filter, max: 1, time: 30000, errors: ["time"] }).catch(() => null)
+
+    if (!collected || collected.size === 0) {
+      return prompt.edit({ embeds: [err("Timed Out", "No link provided within 30 seconds.")] })
+    }
+
+    const link = collected.first().content.trim()
+    await collected.first().delete().catch(() => {})
+    await db.set(`scmsg_server_${guild.id}`, link)
+    return prompt.edit({ embeds: [ok("Server Link Saved", `Server link has been set.`)] })
+  }
+
+  if (cmd === "change") {
+    if (!await isAdmin(member, guild.id))
+      return message.reply({ embeds: [err("No Permission", "Administrator permission required.")] })
+
+    const current = await db.get(`scmsg_mode_${guild.id}`) || "role"
+    const next = current === "role" ? "server" : "role"
+    await db.set(`scmsg_mode_${guild.id}`, next)
+
+    const desc = next === "server"
+      ? "**Mode: Server Link**\nClicking **Join Us** / using `.hitbyjp` will now send the saved server invite link."
+      : "**Mode: Mercy Role**\nClicking **Join Us** / using `.hitbyjp` will now give the mercy role."
+    return message.reply({ embeds: [ok("Mode Changed", desc)] })
   }
 
   if (cmd === "setprofit") {
@@ -1210,8 +1244,22 @@ client.on("interactionCreate", async interaction => {
   }
 
   if (interaction.customId === "scam_join") {
-    await interaction.channel.send(`${interaction.user} has accepted his faith, and wanted to join us. 🤝`)
-    return interaction.reply({ content: "Welcome aboard!", ephemeral: true })
+    const mode = await db.get(`scmsg_mode_${interaction.guild.id}`) || "role"
+
+    if (mode === "server") {
+      const serverLink = await db.get(`scmsg_server_${interaction.guild.id}`)
+      if (!serverLink)
+        return interaction.reply({ content: "⚠️ No server link configured yet. Ask an admin to use `.setserver`.", ephemeral: true })
+      await interaction.channel.send(`${interaction.user} has accepted their fate and joined us. 🤝`)
+      return interaction.reply({ content: `✅ Here is your server link: ${serverLink}`, ephemeral: true })
+    } else {
+      const mercyRoleId = await db.get(`mercyrole_${interaction.guild.id}`)
+      if (!mercyRoleId)
+        return interaction.reply({ content: "⚠️ No mercy role configured yet. Ask an admin to use `.setmercyrole`.", ephemeral: true })
+      await interaction.member.roles.add(mercyRoleId).catch(() => {})
+      await interaction.channel.send(`${interaction.user} has accepted their fate and joined us. 🤝`)
+      return interaction.reply({ content: "✅ Welcome aboard! You've been given the mercy role.", ephemeral: true })
+    }
   }
 
   if (interaction.customId === "scam_leave") {
