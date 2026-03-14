@@ -134,21 +134,23 @@ const HELP_PAGES = [
 
 function buildHelpEmbed(page, requester) {
   const data = HELP_PAGES[page]
+  const time = new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
   return new EmbedBuilder()
     .setColor(data.color)
     .setTitle(data.title)
     .setDescription(data.description)
-    .setFooter({ text: `Requested by ${requester.username} • Page ${page + 1}/${HELP_PAGES.length} | Today at ${new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}` })
+    .setFooter({ text: `Requested by ${requester.username} • Page ${page + 1}/${HELP_PAGES.length} | Today at ${time}` })
     .setTimestamp()
 }
 
-function buildHelpButtons(page) {
+function buildHelpButtons(page, userId) {
+  const total = HELP_PAGES.length
   return new ActionRowBuilder().addComponents(
-    new ButtonBuilder().setCustomId("help_first").setEmoji("⏮️").setStyle(ButtonStyle.Secondary).setDisabled(page === 0),
-    new ButtonBuilder().setCustomId("help_prev").setEmoji("◀️").setStyle(ButtonStyle.Primary).setDisabled(page === 0),
-    new ButtonBuilder().setCustomId("help_page").setLabel(`${page + 1}/${HELP_PAGES.length}`).setStyle(ButtonStyle.Secondary).setDisabled(true),
-    new ButtonBuilder().setCustomId("help_next").setEmoji("▶️").setStyle(ButtonStyle.Primary).setDisabled(page === HELP_PAGES.length - 1),
-    new ButtonBuilder().setCustomId("help_last").setEmoji("⏭️").setStyle(ButtonStyle.Secondary).setDisabled(page === HELP_PAGES.length - 1),
+    new ButtonBuilder().setCustomId(`help_first_${page}_${userId}`).setEmoji("⏮️").setStyle(ButtonStyle.Secondary).setDisabled(page === 0),
+    new ButtonBuilder().setCustomId(`help_prev_${page}_${userId}`).setEmoji("◀️").setStyle(ButtonStyle.Primary).setDisabled(page === 0),
+    new ButtonBuilder().setCustomId(`help_page_${page}_${userId}`).setLabel(`${page + 1}/${total}`).setStyle(ButtonStyle.Secondary).setDisabled(true),
+    new ButtonBuilder().setCustomId(`help_next_${page}_${userId}`).setEmoji("▶️").setStyle(ButtonStyle.Primary).setDisabled(page === total - 1),
+    new ButtonBuilder().setCustomId(`help_last_${page}_${userId}`).setEmoji("⏭️").setStyle(ButtonStyle.Secondary).setDisabled(page === total - 1),
   )
 }
 
@@ -908,16 +910,8 @@ client.on("messageCreate", async message => {
     // ─── HELP ───
     if (cmd === "help") {
       const embed = buildHelpEmbed(0, message.author)
-      const buttons = buildHelpButtons(0)
-
-      const msg = await message.channel.send({ embeds: [embed], components: [buttons] })
-
-      await db.set(`help_${msg.id}`, {
-        userId: message.author.id,
-        page: 0,
-      })
-
-      console.log(`✅ Help created: ${msg.id}`)
+      const buttons = buildHelpButtons(0, message.author.id)
+      await message.channel.send({ embeds: [embed], components: [buttons] })
       return
     }
 
@@ -941,28 +935,24 @@ client.on("interactionCreate", async interaction => {
   try {
 
     // ─── HELP BUTTONS ───
-    if (interaction.isButton() && ["help_first", "help_prev", "help_next", "help_last"].includes(interaction.customId)) {
-      const session = await db.get(`help_${interaction.message.id}`)
+    if (interaction.isButton() && interaction.customId.startsWith("help_") && !interaction.customId.startsWith("help_page_")) {
+      const parts = interaction.customId.split("_")
+      const action = parts[1]
+      const currentPage = parseInt(parts[2])
+      const userId = parts[3]
 
-      if (!session)
-        return interaction.reply({ content: "Help expired. Run `.help`", ephemeral: true })
+      if (interaction.user.id !== userId)
+        return interaction.reply({ content: "Only the person who used `.help` can use these buttons.", ephemeral: true })
 
-      if (interaction.user.id !== session.userId)
-        return interaction.reply({ content: "Only creator can use", ephemeral: true })
-
-      let page = session.page || 0
-
-      if (interaction.customId === "help_first") page = 0
-      else if (interaction.customId === "help_prev") page = Math.max(0, page - 1)
-      else if (interaction.customId === "help_next") page = Math.min(HELP_PAGES.length - 1, page + 1)
-      else if (interaction.customId === "help_last") page = HELP_PAGES.length - 1
-
-      session.page = page
-      await db.set(`help_${interaction.message.id}`, session)
+      let page = currentPage
+      if (action === "first") page = 0
+      else if (action === "prev") page = Math.max(0, currentPage - 1)
+      else if (action === "next") page = Math.min(HELP_PAGES.length - 1, currentPage + 1)
+      else if (action === "last") page = HELP_PAGES.length - 1
 
       await interaction.update({
         embeds: [buildHelpEmbed(page, interaction.user)],
-        components: [buildHelpButtons(page)],
+        components: [buildHelpButtons(page, userId)],
       })
       return
     }
