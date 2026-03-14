@@ -1,16 +1,16 @@
 {
-  "name": "@workspace/discord-bot",
-  "version": "0.0.0",
-  "private": true,
+  "name": "powerbang-bot",
+  "version": "1.0.0",
+  "description": "Discord ticket bot",
+  "main": "index.js",
   "type": "commonjs",
   "scripts": {
-    "dev": "node src/index.js",
-    "start": "node src/index.js"
+    "start": "node index.js"
   },
   "dependencies": {
-    "better-sqlite3": "^12.6.2",
     "discord.js": "^14.16.3",
-    "quick.db": "^9.1.7"
+    "quick.db": "^9.1.7",
+    "better-sqlite3": "^12.6.2",
+    "express": "^4.19.2"
   }
 }
-npm install express
