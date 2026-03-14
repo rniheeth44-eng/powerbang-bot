@@ -287,6 +287,7 @@ client.on("messageCreate", async message => {
         "*By opening a ticket or requesting a middleman, you agree to our Middleman ToS.*"
       )
       .setImage(`${IMG_BASE}/ticketpanel2.jpg`)
+      .setThumbnail("https://raw.githubusercontent.com/rniheeth44-eng/powerbang-bot/main/assets/ticket-icon.png")
       .setFooter({ text: "MM Service • Contact staff for questions" })
 
     const row = new ActionRowBuilder().addComponents(
@@ -1213,7 +1214,9 @@ client.on("interactionCreate", async interaction => {
       .setTimestamp()
 
     const closeRow = new ActionRowBuilder().addComponents(
-      new ButtonBuilder().setCustomId("close_ticket").setLabel("🔒  Close Ticket").setStyle(ButtonStyle.Danger)
+      new ButtonBuilder().setCustomId("close_ticket")   .setLabel("🔒  Close Ticket").setStyle(ButtonStyle.Danger),
+      new ButtonBuilder().setCustomId("claim_ticket")   .setLabel("🟢  Claim")       .setStyle(ButtonStyle.Success),
+      new ButtonBuilder().setCustomId("adduser_ticket") .setLabel("➕  Add User")     .setStyle(ButtonStyle.Secondary)
     )
 
     const roleMention = ticketRoleId ? `<@&${ticketRoleId}> ` : ""
@@ -1242,6 +1245,60 @@ client.on("interactionCreate", async interaction => {
 
     await interaction.reply({ embeds: [embed] })
     setTimeout(() => interaction.channel.delete().catch(() => {}), 5000)
+  }
+
+  if (interaction.customId === "claim_ticket") {
+    if (!await isTicketStaff(interaction.member, interaction.guild.id))
+      return interaction.reply({ content: "❌ Only ticket staff can claim tickets.", ephemeral: true })
+
+    const updatedRow = new ActionRowBuilder().addComponents(
+      new ButtonBuilder().setCustomId("close_ticket")   .setLabel("🔒  Close Ticket").setStyle(ButtonStyle.Danger),
+      new ButtonBuilder().setCustomId("claim_ticket")   .setLabel(`✅  Claimed by ${interaction.user.username}`).setStyle(ButtonStyle.Success).setDisabled(true),
+      new ButtonBuilder().setCustomId("adduser_ticket") .setLabel("➕  Add User")     .setStyle(ButtonStyle.Secondary)
+    )
+    await interaction.message.edit({ components: [updatedRow] })
+
+    const embed = new EmbedBuilder()
+      .setColor(C.GREEN)
+      .setTitle("✅ Ticket Claimed")
+      .setDescription(`This ticket has been claimed by ${interaction.user}.\nPlease wait while your middleman gets ready.`)
+      .setTimestamp()
+    return interaction.reply({ embeds: [embed] })
+  }
+
+  if (interaction.customId === "adduser_ticket") {
+    if (!await isTicketStaff(interaction.member, interaction.guild.id))
+      return interaction.reply({ content: "❌ Only ticket staff can add users.", ephemeral: true })
+
+    const modal = new ModalBuilder().setCustomId("adduser_form").setTitle("Add User to Ticket")
+    const input = new TextInputBuilder()
+      .setCustomId("user_id")
+      .setLabel("User ID")
+      .setStyle(TextInputStyle.Short)
+      .setPlaceholder("Paste their user ID (e.g. 123456789012345678)")
+      .setRequired(true)
+    modal.addComponents(new ActionRowBuilder().addComponents(input))
+    return interaction.showModal(modal)
+  }
+
+  if (interaction.isModalSubmit() && interaction.customId === "adduser_form") {
+    const userId = interaction.fields.getTextInputValue("user_id").replace(/[<@!>]/g, "").trim()
+    const target = await interaction.guild.members.fetch(userId).catch(() => null)
+    if (!target)
+      return interaction.reply({ content: "❌ Could not find that user. Make sure you entered their **User ID** (numbers only).", ephemeral: true })
+
+    await interaction.channel.permissionOverwrites.edit(target, {
+      ViewChannel: true,
+      SendMessages: true,
+      ReadMessageHistory: true,
+    })
+
+    const embed = new EmbedBuilder()
+      .setColor(C.GREEN)
+      .setTitle("➕ User Added")
+      .setDescription(`${target} has been added to this ticket.`)
+      .setTimestamp()
+    return interaction.reply({ embeds: [embed] })
   }
 
   if (interaction.customId === "scam_join") {
