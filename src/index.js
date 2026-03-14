@@ -295,11 +295,15 @@ client.on("messageCreate", async message => {
       new ButtonBuilder().setCustomId("mm_request").setLabel("🎫  Request Middleman").setStyle(ButtonStyle.Primary)
     )
 
-    // Delete old panel if one exists in this channel
-    const oldPanelId = await db.get(`ticketpanel_${guild.id}_${message.channel.id}`)
-    if (oldPanelId) {
-      const oldMsg = await message.channel.messages.fetch(oldPanelId).catch(() => null)
-      if (oldMsg) await oldMsg.delete().catch(() => {})
+    // Delete ALL old bot panel messages in this channel before sending fresh one
+    const recent = await message.channel.messages.fetch({ limit: 50 }).catch(() => null)
+    if (recent) {
+      const oldPanels = recent.filter(m =>
+        m.author.id === client.user.id &&
+        m.embeds.length > 0 &&
+        m.embeds[0].title === "Request An Middleman"
+      )
+      for (const [, m] of oldPanels) await m.delete().catch(() => {})
     }
 
     await message.delete().catch(() => {}) // clean up the command message
