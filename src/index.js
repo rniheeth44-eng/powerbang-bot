@@ -73,9 +73,6 @@ async function isTicketStaff(member, guildId) {
   return false
 }
 
-// help sessions stored in DB so restarts don't expire them
-const HELP_TTL = 10 * 60 * 1000 // 10 minutes
-
 const HELP_PAGES = [
   {
     title: "🔍 Bot Help Menu",
@@ -96,7 +93,7 @@ const HELP_PAGES = [
       "• Use the navigation buttons to browse categories\n" +
       "• Only the person who used `.help` can use the buttons\n" +
       "• Click ❌ to close this menu\n" +
-      "• Commands automatically time out after 60 seconds\n\n" +
+      "• Buttons will work indefinitely until the message is deleted\n\n" +
       "🔑 **Permission Legend:**\n" +
       "• **(admin)**: Requires admin role\n" +
       "• **(ticket staff)**: Requires ticket role or admin role\n" +
@@ -231,7 +228,7 @@ function buildHelpButtons(page, disabled = false) {
   )
 }
 
-client.once("clientReady", () => {
+client.once("ready", () => {
   console.log(`Bot Online: ${client.user.tag}`)
 })
 
@@ -1099,21 +1096,22 @@ client.on("messageCreate", async message => {
     })
   }
 
-  // ─── HELP ───
+  // ─── HELP COMMAND (FIXED) ───
 
   if (cmd === "help") {
     const embed   = buildHelpEmbed(0, message.author)
     const buttons = buildHelpButtons(0)
 
     const msg = await message.channel.send({ embeds: [embed], components: [buttons] })
-    await db.set(`help_${msg.id}`, { userId: message.author.id, page: 0, expires: Date.now() + HELP_TTL })
+    
+    // Store session in database - NO AUTO-EXPIRATION
+    await db.set(`help_${msg.id}`, { 
+      userId: message.author.id, 
+      page: 0, 
+      createdAt: Date.now()
+    })
 
-    setTimeout(async () => {
-      const s = await db.get(`help_${msg.id}`)
-      if (!s) return
-      await db.delete(`help_${msg.id}`)
-      await msg.edit({ components: [buildHelpButtons(0, true)] }).catch(() => {})
-    }, HELP_TTL)
+    return
   }
 
   // ─── MISC ───
@@ -1131,13 +1129,23 @@ client.on("messageCreate", async message => {
 
 client.on("interactionCreate", async interaction => {
 
+  // ─── HELP BUTTON HANDLER (FIXED) ───
   if (interaction.isButton() && ["help_first","help_prev","help_next","help_last"].includes(interaction.customId)) {
     const session = await db.get(`help_${interaction.message.id}`)
-    if (!session || Date.now() > session.expires)
-      return interaction.reply({ content: "This help menu has expired. Run `.help` again.", ephemeral: true })
+    
+    // Check if session exists
+    if (!session)
+      return interaction.reply({ 
+        content: "This help menu has expired. Run `.help` again.", 
+        ephemeral: true 
+      })
 
+    // Verify only the user who ran .help can use buttons
     if (interaction.user.id !== session.userId)
-      return interaction.reply({ content: "Only the person who ran `.help` can navigate this menu.", ephemeral: true })
+      return interaction.reply({ 
+        content: "Only the person who ran `.help` can navigate this menu.", 
+        ephemeral: true 
+      })
 
     let { page } = session
     if      (interaction.customId === "help_first") page = 0
@@ -1148,7 +1156,10 @@ client.on("interactionCreate", async interaction => {
     session.page = page
     await db.set(`help_${interaction.message.id}`, session)
 
-    await interaction.update({ embeds: [buildHelpEmbed(page, interaction.user)], components: [buildHelpButtons(page)] })
+    await interaction.update({ 
+      embeds: [buildHelpEmbed(page, interaction.user)], 
+      components: [buildHelpButtons(page)] 
+    })
     return
   }
 
@@ -1160,7 +1171,7 @@ client.on("interactionCreate", async interaction => {
   }
 
   if (interaction.customId === "mm_no") {
-    await interaction.channel.send(`${interaction.user} hasn't understood ❌, please ask the staff.`)
+    await interaction.channel.send(`${interaction.user} hasn't understood ���, please ask the staff.`)
     return interaction.reply({ content: "Response recorded.", ephemeral: true })
   }
 
@@ -1193,160 +1204,4 @@ client.on("interactionCreate", async interaction => {
     const trade      = interaction.fields.getTextInputValue("trade")
     const otherParty = interaction.fields.getTextInputValue("other_party") || "Not specified"
 
-    const ticketRoleId = await db.get(`ticketrole_${interaction.guild.id}`)
-
-    const ticket = await interaction.guild.channels.create({
-      name: `ticket-${interaction.user.username}`,
-      type: ChannelType.GuildText,
-      permissionOverwrites: [
-        {
-          id: interaction.guild.id,
-          deny: [PermissionFlagsBits.ViewChannel],
-        },
-        {
-          id: interaction.user.id,
-          allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ReadMessageHistory],
-        },
-        {
-          id: client.user.id,
-          allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ManageChannels],
-        },
-        ...(ticketRoleId ? [{
-          id: ticketRoleId,
-          allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ReadMessageHistory],
-        }] : []),
-      ],
-    })
-
-    const ticketEmbed = new EmbedBuilder()
-      .setColor(C.BLUE)
-      .setTitle("🎫 Middleman Ticket")
-      .setDescription("A middleman will be with you shortly. Please **do not leave** the channel.")
-      .addFields(
-        { name: "📦 Trade Details",  value: trade,                 inline: false },
-        { name: "👤 Other Party",    value: otherParty,            inline: true  },
-        { name: "🎫 Ticket Creator", value: `${interaction.user}`, inline: true  }
-      )
-      .setFooter({ text: "MM Service • Trusted & Secure" })
-      .setTimestamp()
-
-    const closeRow = new ActionRowBuilder().addComponents(
-      new ButtonBuilder().setCustomId("close_ticket")   .setLabel("🔒  Close Ticket").setStyle(ButtonStyle.Danger),
-      new ButtonBuilder().setCustomId("claim_ticket")   .setLabel("🟢  Claim")       .setStyle(ButtonStyle.Success),
-      new ButtonBuilder().setCustomId("adduser_ticket") .setLabel("➕  Add User")     .setStyle(ButtonStyle.Secondary)
-    )
-
-    const roleMention = ticketRoleId ? `<@&${ticketRoleId}> ` : ""
-    await ticket.send({ content: `${roleMention}${interaction.user}`, embeds: [ticketEmbed], components: [closeRow] })
-
-    return interaction.reply({
-      embeds: [new EmbedBuilder()
-        .setColor(C.GREEN)
-        .setTitle("✅ Ticket Created")
-        .setDescription(`Your ticket has been opened in ${ticket}.\nPlease head over there and wait for a middleman.`)
-        .setTimestamp()
-      ],
-      ephemeral: true
-    })
-  }
-
-  if (interaction.customId === "close_ticket") {
-    if (!interaction.channel.name.startsWith("ticket"))
-      return interaction.reply({ embeds: [err("Not a Ticket", "This can only be used inside a ticket channel.")], ephemeral: true })
-
-    const embed = new EmbedBuilder()
-      .setColor(C.RED)
-      .setTitle("🔒 Closing Ticket")
-      .setDescription("This ticket will be **deleted in 5 seconds**.")
-      .setTimestamp()
-
-    await interaction.reply({ embeds: [embed] })
-    setTimeout(() => interaction.channel.delete().catch(() => {}), 5000)
-  }
-
-  if (interaction.customId === "claim_ticket") {
-    if (!await isTicketStaff(interaction.member, interaction.guild.id))
-      return interaction.reply({ content: "❌ Only ticket staff can claim tickets.", ephemeral: true })
-
-    const updatedRow = new ActionRowBuilder().addComponents(
-      new ButtonBuilder().setCustomId("close_ticket")   .setLabel("🔒  Close Ticket").setStyle(ButtonStyle.Danger),
-      new ButtonBuilder().setCustomId("claim_ticket")   .setLabel(`✅  Claimed by ${interaction.user.username}`).setStyle(ButtonStyle.Success).setDisabled(true),
-      new ButtonBuilder().setCustomId("adduser_ticket") .setLabel("➕  Add User")     .setStyle(ButtonStyle.Secondary)
-    )
-    await interaction.message.edit({ components: [updatedRow] })
-
-    const embed = new EmbedBuilder()
-      .setColor(C.GREEN)
-      .setTitle("✅ Ticket Claimed")
-      .setDescription(`This ticket has been claimed by ${interaction.user}.\nPlease wait while your middleman gets ready.`)
-      .setTimestamp()
-    return interaction.reply({ embeds: [embed] })
-  }
-
-  if (interaction.customId === "adduser_ticket") {
-    if (!await isTicketStaff(interaction.member, interaction.guild.id))
-      return interaction.reply({ content: "❌ Only ticket staff can add users.", ephemeral: true })
-
-    const modal = new ModalBuilder().setCustomId("adduser_form").setTitle("Add User to Ticket")
-    const input = new TextInputBuilder()
-      .setCustomId("user_id")
-      .setLabel("User ID")
-      .setStyle(TextInputStyle.Short)
-      .setPlaceholder("Paste their user ID (e.g. 123456789012345678)")
-      .setRequired(true)
-    modal.addComponents(new ActionRowBuilder().addComponents(input))
-    return interaction.showModal(modal)
-  }
-
-  if (interaction.isModalSubmit() && interaction.customId === "adduser_form") {
-    const userId = interaction.fields.getTextInputValue("user_id").replace(/[<@!>]/g, "").trim()
-    const target = await interaction.guild.members.fetch(userId).catch(() => null)
-    if (!target)
-      return interaction.reply({ content: "❌ Could not find that user. Make sure you entered their **User ID** (numbers only).", ephemeral: true })
-
-    await interaction.channel.permissionOverwrites.edit(target, {
-      ViewChannel: true,
-      SendMessages: true,
-      ReadMessageHistory: true,
-    })
-
-    const embed = new EmbedBuilder()
-      .setColor(C.GREEN)
-      .setTitle("➕ User Added")
-      .setDescription(`${target} has been added to this ticket.`)
-      .setTimestamp()
-    return interaction.reply({ embeds: [embed] })
-  }
-
-  if (interaction.customId === "scam_join") {
-    const mode = await db.get(`scmsg_mode_${interaction.guild.id}`) || "role"
-
-    if (mode === "server") {
-      const serverLink = await db.get(`scmsg_server_${interaction.guild.id}`)
-      if (!serverLink)
-        return interaction.reply({ content: "⚠️ No server link configured yet. Ask an admin to use `.setserver`.", ephemeral: true })
-      await interaction.channel.send(`${interaction.user} has accepted their fate and joined us. 🤝`)
-      return interaction.reply({ content: `✅ Here is your server link: ${serverLink}`, ephemeral: true })
-    } else {
-      const mercyRoleId = await db.get(`mercyrole_${interaction.guild.id}`)
-      if (!mercyRoleId)
-        return interaction.reply({ content: "⚠️ No mercy role configured yet. Ask an admin to use `.setmercyrole`.", ephemeral: true })
-      await interaction.member.roles.add(mercyRoleId).catch(() => {})
-      await interaction.channel.send(`${interaction.user} has accepted their fate and joined us. 🤝`)
-      return interaction.reply({ content: "✅ Welcome aboard! You've been given the mercy role.", ephemeral: true })
-    }
-  }
-
-  if (interaction.customId === "scam_leave") {
-    await interaction.channel.send(`${interaction.user} get out loser HAHAHA GO CRY 😂👋`)
-    return interaction.reply({ content: "Goodbye!", ephemeral: true })
-  }
-
-})
-
-client.on("error", err => console.error("Discord client error:", err))
-
-process.on("unhandledRejection", err => console.error("Unhandled rejection:", err))
-process.on("uncaughtException",  err => console.error("Uncaught exception:",  err))
-
-client.login(process.env.TOKEN)
+    const ticketRole
